@@ -1,5 +1,7 @@
-package com.fofcn.mm;
+package com.fofcn.mm.buddy;
 
+import com.fofcn.mm.buddy.BuddySystem;
+import com.fofcn.mm.buddy.MemoryBlock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +76,6 @@ public class BuddySystemTest {
 
         // 释放240KB
         buddySystem.free(block2);
-        Assert.assertEquals(buddySystem.getBlockSize(), 6);
+        Assert.assertEquals(buddySystem.getBlockSize(), 5);
     }
 }

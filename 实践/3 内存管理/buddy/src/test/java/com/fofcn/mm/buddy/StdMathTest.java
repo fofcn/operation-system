@@ -1,5 +1,6 @@
-package com.fofcn.mm;
+package com.fofcn.mm.buddy;
 
+import com.fofcn.mm.buddy.StdMath;
 import org.junit.Assert;
 import org.junit.Test;
 

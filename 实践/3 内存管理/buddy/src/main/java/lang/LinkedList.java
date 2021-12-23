@@ -1,4 +1,4 @@
-package com.fofcn.mm;
+package lang;
 
 import java.util.Iterator;
 

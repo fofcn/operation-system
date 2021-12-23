@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/buddy.iml" filepath="$PROJECT_DIR$/buddy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/memory.iml" filepath="$PROJECT_DIR$/memory.iml" />
     </modules>
   </component>
 </project>

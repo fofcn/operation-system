@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="buddy" />
+        <module name="memory" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="buddy" target="1.5" />
+      <module name="memory" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,4 +1,4 @@
-package com.fofcn.mm;
+package com.fofcn.mm.buddy;
 
 /**
  * 数学函数

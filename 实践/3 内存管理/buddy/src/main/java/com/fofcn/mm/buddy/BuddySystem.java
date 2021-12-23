@@ -1,4 +1,6 @@
-package com.fofcn.mm;
+package com.fofcn.mm.buddy;
+
+import lang.LinkedList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,6 @@ public class BuddySystem {
      * 可用空闲区全部大小
      */
     private final int size;
-
     /**
      * 空闲区可用大小
      */
