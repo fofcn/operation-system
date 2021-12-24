@@ -1,4 +1,4 @@
-package com.fofcn.mm.buddy;
+package memory;
 
 import lang.LinkedList;
 import util.StdOut;

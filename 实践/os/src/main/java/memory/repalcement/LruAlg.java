@@ -1,4 +1,4 @@
-package repalcement;
+package memory.repalcement;
 
 import java.util.Arrays;
 

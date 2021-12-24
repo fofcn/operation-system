@@ -1,6 +1,5 @@
-package com.fofcn.mm.buddy;
+package memory;
 
-import com.fofcn.mm.buddy.StdMath;
 import org.junit.Assert;
 import org.junit.Test;
 

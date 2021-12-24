@@ -1,7 +1,5 @@
-package com.fofcn.mm.buddy;
+package memory;
 
-import com.fofcn.mm.buddy.BuddySystem;
-import com.fofcn.mm.buddy.MemoryBlock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

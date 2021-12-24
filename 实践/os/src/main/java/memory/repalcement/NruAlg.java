@@ -1,4 +1,4 @@
-package repalcement;
+package memory.repalcement;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;

@@ -1,4 +1,4 @@
-package com.fofcn.mm.buddy;
+package memory;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

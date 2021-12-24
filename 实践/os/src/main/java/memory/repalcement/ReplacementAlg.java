@@ -1,4 +1,4 @@
-package repalcement;
+package memory.repalcement;
 
 /**
  * Replacement algorithm 置换算法

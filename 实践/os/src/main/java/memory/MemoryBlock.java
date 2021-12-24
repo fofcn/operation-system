@@ -1,4 +1,4 @@
-package com.fofcn.mm.buddy;
+package memory;
 
 /**
  * 内存块
