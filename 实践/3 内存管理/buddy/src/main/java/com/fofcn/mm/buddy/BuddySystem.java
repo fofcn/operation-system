@@ -1,9 +1,11 @@
 package com.fofcn.mm.buddy;
 
 import lang.LinkedList;
+import util.StdOut;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -18,7 +20,7 @@ public class BuddySystem {
      * 申请释放锁
      */
     private Lock lock = new ReentrantLock();
-    private LinkedList<MemoryBlock> mmBlockList = new LinkedList<MemoryBlock>();
+    private LinkedList<MemoryBlock> mmBlockList = new LinkedList<>();
     /**
      * 可用空闲区全部大小
      */
@@ -26,12 +28,12 @@ public class BuddySystem {
     /**
      * 空闲区可用大小
      */
-    private volatile int idleSize = 0;
+    private AtomicInteger idleSize = new AtomicInteger(0);
 
     /**
      * 内存块数量
      */
-    private volatile int blockSize = 0;
+    private AtomicInteger blockSize = new AtomicInteger(0);
 
     /**
      * 是否初始化完成
@@ -40,7 +42,6 @@ public class BuddySystem {
 
     public BuddySystem(int size) {
         this.size = size;
-        this.idleSize = size;
     }
 
     /**
@@ -55,7 +56,7 @@ public class BuddySystem {
         memoryBlock.setStart(0);
         memoryBlock.setEnd(size - 1);
         mmBlockList.add(memoryBlock);
-        blockSize += 1;
+        blockSize.incrementAndGet();
         isInitialized = true;
     }
 
@@ -70,9 +71,12 @@ public class BuddySystem {
         MemoryBlock best = null;
 
         try {
-            lock.tryLock();
+            lock.lock();
             // 查看当前空闲块链表，找到小且大于等于申请大小的空闲块
             MemoryBlock smallestFit = findSmallestFitBlock(expectSize);
+            if (smallestFit == null) {
+                throw new InternalError("not enough memory");
+            }
             // 检查是否满足2^u-1 < expectSize <= 2^u
             // 满足则直接分配
             // 不满足则拆分为两个大于或等于S的小块，然后检查是否满足2^u-1 < size <= 2^u
@@ -88,14 +92,14 @@ public class BuddySystem {
                     MemoryBlock right = new MemoryBlock(middle, end, smallBlockSize, false);
                     // 在删除点添加这两块内存
                     mmBlockList.replace(smallestFit, left, right);
-                    blockSize += 1;
+                    blockSize.incrementAndGet();
                     smallestFit = left;
                 }
             }
 
             best = smallestFit;
             best.setUsed(true);
-            idleSize -= best.getSize();
+            idleSize.addAndGet(-best.getSize());
         } finally {
             lock.unlock();
         }
@@ -121,12 +125,12 @@ public class BuddySystem {
     }
 
     public void free(MemoryBlock freeBlock) {
-        List<LinkedList.Node<MemoryBlock>> mergeNodes = new ArrayList<LinkedList.Node<MemoryBlock>>(3);
+        List<LinkedList.Node<MemoryBlock>> mergeNodes = new ArrayList<>(3);
         // 释放内存需要检查四种相邻场景
         // 如果有相邻，则合并
         try {
             freeBlock.setUsed(false);
-            lock.tryLock();
+            lock.lock();
             LinkedList.Node<MemoryBlock> toFreeNode = mmBlockList.findNode(freeBlock);
             if (toFreeNode == null) {
                 throw new IllegalArgumentException("You accessed memory illegally.");
@@ -140,7 +144,7 @@ public class BuddySystem {
                     && prev.item.getSize() == toFreeNode.item.getSize()
                     && prev.item.getEnd() == toFreeNode.item.getStart()) {
                 mergeNodes.add(prev);
-                blockSize -= 1;
+                blockSize.incrementAndGet();
             }
 
             mergeNodes.add(toFreeNode);
@@ -159,7 +163,7 @@ public class BuddySystem {
 
             for (LinkedList.Node<MemoryBlock> node : mergeNodes) {
                 size += node.item.getSize();
-                blockSize -= 1;
+                blockSize.decrementAndGet();
             }
 
 
@@ -177,7 +181,7 @@ public class BuddySystem {
     public void printBlocks() {
         int index = 1;
         for (MemoryBlock memoryBlock : mmBlockList) {
-            System.out.println("index: " + index + " " + memoryBlock);
+            StdOut.println("index: " + index + " " + memoryBlock);
             index++;
         }
     }
@@ -187,10 +191,10 @@ public class BuddySystem {
     }
 
     public int getIdleSize() {
-        return idleSize;
+        return idleSize.get();
     }
 
     public int getBlockSize() {
-        return blockSize;
+        return blockSize.get();
     }
 }

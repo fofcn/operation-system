@@ -99,6 +99,7 @@ public class LinkedList<E> implements Iterable<E> {
         }
     }
 
+    @Override
     public Iterator<E> iterator() {
         return new LinkedListIterator(first);
     }
@@ -110,25 +111,28 @@ public class LinkedList<E> implements Iterable<E> {
             cur = first;
         }
 
+        @Override
         public boolean hasNext() {
             return cur != null;
         }
 
+        @Override
         public E next() {
             E item = cur.item;
             cur = cur.next;
             return item;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("This is not implemented.");
         }
     }
 
     public static class Node<E> {
-        E item;
-        Node<E> next;
-        Node<E> prev;
+        public E item;
+        public Node<E> next;
+        public Node<E> prev;
 
         Node(Node<E> prev, E element, Node<E> next) {
             this.item = element;
