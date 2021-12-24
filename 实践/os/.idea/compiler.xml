@@ -6,11 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="os" />
         <module name="memory" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="memory" target="8" />
+      <module name="os" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
