@@ -61,6 +61,23 @@ public class SeparateChainingHashMap<Key, Value> implements Map<Key, Value> {
         return size;
     }
 
+    @Override
+    public Value remove(Key key) {
+        int hash = hash(key);
+        for (Node<Key, Value> node = buckets[hash]; node != null; node = node.next) {
+            if (node.key.equals(key)) {
+                Value val = node.value;
+                size--;
+                if (node == buckets[hash]) {
+                    buckets[hash] = null;
+                }
+                return val;
+            }
+        }
+
+        return null;
+    }
+
     private int hash(Key key) {
         if (key == null) {
             return 0;

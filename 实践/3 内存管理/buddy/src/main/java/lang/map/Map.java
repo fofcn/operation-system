@@ -28,5 +28,11 @@ public interface Map<Key, Value> {
      */
     int size();
 
+    /**
+     * 删除指定key
+     * @param key
+     * @return
+     */
+    Value remove(Key key);
 
 }

@@ -2,6 +2,8 @@ package lang.map;
 
 import org.omg.CORBA.Object;
 
+import java.util.HashMap;
+
 /**
  * 线性探查Map
  *
@@ -52,6 +54,23 @@ public class LinearProbingHashMap<Key, Value> implements Map<Key, Value> {
     @Override
     public int size() {
         return size;
+    }
+
+    @Override
+    public Value remove(Key key) {
+        int index;
+        for (index = hash(key); keys[index] != null; index = (index + 1) % mod) {
+            if (keys[index].equals(key)) {
+                Value val = values[index];
+                // 删除key
+                keys[index] = null;
+                // 删除value
+                values[index] = null;
+                return values[index];
+            }
+        }
+
+        return null;
     }
 
     private int hash(Key key) {
