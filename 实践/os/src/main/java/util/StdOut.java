@@ -12,6 +12,10 @@ public class StdOut {
         System.out.println(fmt);
     }
 
+    public static void println(Object fmt) {
+        System.out.println(fmt);
+    }
+
     public static void println() {
         System.out.println();
     }
