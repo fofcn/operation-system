@@ -105,8 +105,28 @@ public class CaSystem {
         initializeMetaInfo(freeSpacePages, inodePages);
     }
 
-    private void checkIfInitialized() {
+    private boolean checkIfInitialized() {
+        // read boot block
+        byte[] bootBlockBytes = diskHelper.read(0, blockSize);
+        if (bootBlockBytes == null) {
+            // todo
+        }
 
+        bootBlock = ByteArraySerializer.deserialize(BootBlock.class, bootBlockBytes);
+        if (bootBlock.getIsInit() == 1) {
+            return true;
+        }
+
+        return false;
+        // read super block
+
+        // read free space
+
+        // read i-node(skip)
+
+        // read root directory
+
+        // read files and directories (skip)
     }
 
     private void initializeMetaInfo(long freeSpacePages, long inodePages) {
