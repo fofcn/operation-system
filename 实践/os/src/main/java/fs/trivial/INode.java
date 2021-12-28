@@ -1,5 +1,7 @@
 package fs.trivial;
 
+import helper.annotation.SerializerOrder;
+
 /**
  * i-node
  *
@@ -10,27 +12,32 @@ public class INode {
     /**
      * i-node index number
      */
-    private long number;
+    @SerializerOrder(1)
+    private long number = 0;
 
     /**
      * create time
      */
-    private long createTime;
+    @SerializerOrder(2)
+    private long createTime = System.currentTimeMillis();
 
     /**
      * last access time
      */
-    private long lastAccessTime;
+    @SerializerOrder(3)
+    private long lastAccessTime = System.currentTimeMillis();
 
     /**
      * last modified time
      */
-    private long lastModifiedTime;
+    @SerializerOrder(4)
+    private long lastModifiedTime = System.currentTimeMillis();
 
     /**
      * first block number
      */
-    private long firstBlockNumber;
+    @SerializerOrder(5)
+    private long firstBlockNumber = 0;
 
     public long getNumber() {
         return number;

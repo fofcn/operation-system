@@ -1,5 +1,7 @@
 package fs.trivial;
 
+import helper.annotation.SerializerOrder;
+
 /**
  * Boot block.
  *
@@ -11,6 +13,7 @@ public class BootBlock {
     /**
      * 是否初始化
      */
+    @SerializerOrder
     private int isInit;
 
     public int getIsInit() {

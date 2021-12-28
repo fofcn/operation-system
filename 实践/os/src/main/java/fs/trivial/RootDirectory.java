@@ -1,5 +1,7 @@
 package fs.trivial;
 
+import helper.annotation.SerializerOrder;
+
 import java.util.List;
 
 /**
@@ -10,9 +12,16 @@ import java.util.List;
  */
 public class RootDirectory {
 
+    @SerializerOrder
     private String name;
 
     private List<Long> iNodeNumber;
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }
