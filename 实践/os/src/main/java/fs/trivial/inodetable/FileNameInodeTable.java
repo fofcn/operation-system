@@ -1,4 +1,4 @@
-package fs.trivial;
+package fs.trivial.inodetable;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package fs.trivial;
+package fs.trivial.boot;
 
 import helper.annotation.SerializerOrder;
 

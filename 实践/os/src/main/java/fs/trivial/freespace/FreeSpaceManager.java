@@ -1,4 +1,4 @@
-package fs.trivial;
+package fs.trivial.freespace;
 
 /**
  * free space management of file system

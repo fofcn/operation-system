@@ -1,4 +1,4 @@
-package fs.trivial;
+package fs.trivial.inodetable;
 
 /**
  * file name and inode table.

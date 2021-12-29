@@ -1,6 +1,17 @@
 package fs.trivial;
 
 import fs.helper.DiskHelper;
+import fs.trivial.boot.BootBlock;
+import fs.trivial.boot.BootBlockManager;
+import fs.trivial.freespace.BitMapFreeSpaceManager;
+import fs.trivial.freespace.FreeSpaceManager;
+import fs.trivial.inode.INode;
+import fs.trivial.inode.InodeManager;
+import fs.trivial.inodetable.FileNameInodeManager;
+import fs.trivial.root.RootDirectory;
+import fs.trivial.root.RootDirectoryManager;
+import fs.trivial.superblock.SuperBlock;
+import fs.trivial.superblock.SuperBlockManager;
 import lang.serializer.ByteArraySerializer;
 
 import java.io.IOException;
@@ -22,25 +33,27 @@ import java.io.IOException;
  * @date 2021/12/27
  */
 public class CaSystem {
-    private static final int MAX_PATH = 255;
 
-    private static final int FS_MAGIC_NUMBER = 0x12345678;
 
     private final Partition partition;
 
     private final int blockSize;
 
-    private BootBlock bootBlock;
-
-    private SuperBlock superBlock;
-
     private FreeSpaceManager freeSpaceManager;
 
-    private RootDirectory rootDirectory;
-
-    private FileNameInodeTable fileNameInodeTable;
-
     private DiskHelper diskHelper;
+
+    private BootBlockManager bootBckManager;
+
+    private SuperBlockManager superBlockManager;
+
+    private BitMapFreeSpaceManager freeSpaceManager;
+
+    private InodeManager inodeManager;
+
+    private RootDirectoryManager rootDirectoryManager;
+
+    private FileNameInodeManager fileNameInodeManager;
 
     public CaSystem(Partition partition, final int blockSize) {
         this.partition = partition;
@@ -61,22 +74,6 @@ public class CaSystem {
         }
 
         // Initialize the file system according to the amount of partition space.
-        long size = partition.getEnd() - partition.getStart();
-
-        // Initialize the boot block of the file system
-        // 引导块占用一页
-        bootBlock = new BootBlock();
-        bootBlock.setIsInit(1);
-        long bootPage = 1;
-
-        // Initialize the super block of the file system.
-        // 超级块占用一页
-        superBlock = new SuperBlock();
-        superBlock.setMagic(FS_MAGIC_NUMBER);
-        // the amount of blocks.
-        long blockAmount = size / blockSize;
-        superBlock.setBlockAmount(blockAmount);
-        long superBlockPage = 1;
 
         // Initialize the free space management of the file system.
         // 空闲区管理占用n页
@@ -145,5 +142,25 @@ public class CaSystem {
         long offset = blockSize * (1 + 1 + freeSpacePages + inodePages);
         byte[] rootBlockBytes = ByteArraySerializer.serialize(rootDirectory, RootDirectory.class);
         diskHelper.write(rootBlockBytes, offset);
+    }
+
+    public DiskHelper getDiskHelper() {
+        return diskHelper;
+    }
+
+    public int getBlockSize() {
+        return blockSize;
+    }
+
+    public BootBlockManager getBootBlockManager() {
+        return bootBlockManager;
+    }
+
+    public long getPartitionSize() {
+        return partition.getEnd() - partition.getStart();
+    }
+
+    public InodeManager getInodeManager() {
+        return inodeManager;
     }
 }

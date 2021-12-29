@@ -1,4 +1,4 @@
-package fs.trivial;
+package fs.trivial.inode;
 
 import helper.annotation.SerializerOrder;
 
@@ -39,6 +39,12 @@ public class INode {
     @SerializerOrder(5)
     private long firstBlockNumber = 0;
 
+    /**
+     * length of file
+     */
+    @SerializerOrder(6)
+    private long length = 0;
+
     public long getNumber() {
         return number;
     }
@@ -77,5 +83,13 @@ public class INode {
 
     public void setFirstBlockNumber(long firstBlockNumber) {
         this.firstBlockNumber = firstBlockNumber;
+    }
+
+    public long getLength() {
+        return length;
+    }
+
+    public void setLength(long length) {
+        this.length = length;
     }
 }
