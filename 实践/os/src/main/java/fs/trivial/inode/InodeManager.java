@@ -3,6 +3,8 @@ package fs.trivial.inode;
 import fs.trivial.Manager;
 import lang.serializer.ByteArraySerializer;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * I-node manager of file system.
  *
@@ -11,10 +13,13 @@ import lang.serializer.ByteArraySerializer;
  */
 public class InodeManager implements Manager {
 
+    private AtomicLong inodeNumber = new AtomicLong(1L);
+
     @Override
     public boolean initialize() {
         return false;
     }
+
 
     @Override
     public void start() {
@@ -23,6 +28,10 @@ public class InodeManager implements Manager {
 
     @Override
     public void shutdown() {
+
+    }
+
+    public void createInode(String name) {
 
     }
 

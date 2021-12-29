@@ -35,6 +35,9 @@ public class SuperBlockManager implements Manager {
             long blockAmount = caSystem.getPartitionSize() / caSystem.getBlockSize();
             superBlock.setBlockAmount(blockAmount);
 
+            // 计算i-node bit map的块
+
+
             // 计算i-node数量，每个块一个inode
             int iNodeSize = caSystem.getInodeManager().getIndexNodeSize();
             long inodeAmount = blockAmount * iNodeSize;
@@ -63,7 +66,7 @@ public class SuperBlockManager implements Manager {
 
             // 写入硬盘
             byte[] superBlockBytes = ByteArraySerializer.serialize(superBlock, SuperBlock.class);
-            caSystem.getDiskHelper().write(superBlockBytes, 1 * caSystem.getBlockSize());
+            caSystem.getDiskHelper().write(superBlockBytes, caSystem.getBlockSize());
         }
 
         return true;
@@ -77,5 +80,13 @@ public class SuperBlockManager implements Manager {
     @Override
     public void shutdown() {
 
+    }
+
+    public long getFreeSpacePages() {
+        return superBlock.getFreeSpacePages();
+    }
+
+    public long getFreeSpaceStartPage() {
+        return superBlock.getFreeSpaceStartPage();
     }
 }

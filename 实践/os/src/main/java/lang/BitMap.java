@@ -1,5 +1,7 @@
 package lang;
 
+import java.nio.ByteBuffer;
+
 /**
  * BitMap implementation 位图实现
  *
@@ -21,6 +23,15 @@ public class BitMap {
         this.size = size;
         long buckets = size / 32 + size % 32 == 0 ? 0 : 1;
         bitsMap = new int[(int) buckets];
+    }
+
+    public BitMap(byte[] bytes) {
+        this.size = bytes.length;
+        bitsMap = new int[bytes.length / 4];
+        for (int i = 0, j = 0; i < bytes.length; i = i + 4, j++) {
+            int intWord = (bytes[i] << 24) & (bytes[i + 1] << 16) & (bytes[i + 2] << 8) & bytes[i + 3];
+            bitsMap[j] = intWord;
+        }
     }
 
     /**
@@ -76,5 +87,14 @@ public class BitMap {
         for (int i = 0; i < bitsMap.length; i++) {
             bitsMap[i] |= 0xffffffff;
         }
+    }
+
+    public byte[] toByteArray() {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(bitsMap.length * 4);
+        for (int i = 0; i < bitsMap.length; i++) {
+            byteBuffer.putInt(bitsMap[i]);
+        }
+
+        return byteBuffer.array();
     }
 }
