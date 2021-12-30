@@ -1,8 +1,5 @@
 package memory.repalcement;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
-
 /**
  * Not recently used algorithm 最近未使用算法
  * 算法介绍(Introduce to the Not recently used algorithm)：
@@ -24,13 +21,6 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @date 2021/12/24
  */
 public class NruAlg {
-    /**
-     * 一个时钟中断
-     */
-    private final ScheduledThreadPoolExecutor timeInterrupt = new ScheduledThreadPoolExecutor(1,
-            r -> new Thread(r, "nru_time_interrupt"),
-            new ThreadPoolExecutor.AbortPolicy());
-
     /**
      * R位表示读
      */
