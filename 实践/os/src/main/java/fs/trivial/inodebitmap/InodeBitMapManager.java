@@ -48,4 +48,11 @@ public class InodeBitMapManager implements Manager {
     public void shutdown() {
 
     }
+
+    public int getFreeInodeIndex() {
+        return 0;
+    }
+
+    public void setBlockUsed(int index) {
+    }
 }

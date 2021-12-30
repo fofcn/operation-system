@@ -8,7 +8,7 @@ import helper.annotation.SerializerOrder;
  * @author jiquanxi
  * @date 2021/12/28
  */
-public class INode {
+public class Inode {
     /**
      * i-node index number
      */

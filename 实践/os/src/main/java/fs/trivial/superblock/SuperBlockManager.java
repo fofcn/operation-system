@@ -35,6 +35,9 @@ public class SuperBlockManager implements Manager {
             long blockAmount = caSystem.getPartitionSize() / caSystem.getBlockSize();
             superBlock.setBlockAmount(blockAmount);
 
+            // inode amount
+            superBlock.setInodeAmount(0L);
+
             // 计算root directory空间
             long rootDirectoryPages = 1;
             superBlock.setRootDirectoryPages(rootDirectoryPages);
@@ -50,7 +53,7 @@ public class SuperBlockManager implements Manager {
             long inodeAmount = blockAmount * iNodeSize;
             // i-node占用n页
             long inodePages = inodeAmount / caSystem.getBlockSize() + iNodeSize % caSystem.getBlockSize() == 0 ? 0 : 1;
-            superBlock.setInodeAmount(inodePages);
+            superBlock.setInodePages(inodePages);
             superBlock.setInodeStartPage(3 + inodeBitMapPages);
 
             // 计算free space空间
@@ -58,13 +61,19 @@ public class SuperBlockManager implements Manager {
             superBlock.setFreeSpacePages(freeSpacePages);
             superBlock.setFreeSpaceStartPage(3 + inodeBitMapPages + inodePages);
 
+            // 计算file name i-node位图空间
+            long fileInodeBitMapPages = blockAmount / (8 * caSystem.getBlockSize());
+            long fileInodeBitMapStartPage = 3 + inodeBitMapPages + inodePages + freeSpacePages;
+            superBlock.setFileInodeBitMapPages(fileInodeBitMapPages);
+            superBlock.setFileInodeBitMapStartPage(fileInodeBitMapStartPage);
+
             // 计算file name i-node空间
             long fileInodePages = (blockAmount * (MAX_PATH + 8 + 4)) / caSystem.getBlockSize();
             superBlock.setFileInodePages(fileInodePages);
-            superBlock.setFileInodeStartPage(3 + inodeBitMapPages + inodePages + freeSpacePages + fileInodePages);
+            superBlock.setFileInodeStartPage(3 + inodeBitMapPages + inodePages + freeSpacePages + fileInodeBitMapPages + fileInodePages);
 
             // 计算数据起始块号
-            superBlock.setDataStartPage(3 + inodeBitMapPages + inodePages + freeSpacePages + fileInodePages + fileInodePages);
+            superBlock.setDataStartPage(3 + inodeBitMapPages + inodePages + freeSpacePages + fileInodePages + fileInodeBitMapPages + fileInodePages);
 
             // 写入硬盘
             byte[] superBlockBytes = ByteArraySerializer.serialize(superBlock, SuperBlock.class);
@@ -106,5 +115,29 @@ public class SuperBlockManager implements Manager {
 
     public long getInodeBitMapPages() {
         return superBlock.getInodeBitMapPages();
+    }
+
+    public long getFileInodeStartPage() {
+        return superBlock.getFileInodeStartPage();
+    }
+
+    public long getFileInodePages() {
+        return superBlock.getFileInodePages();
+    }
+
+    public long getInodeAmount() {
+        return superBlock.getInodeAmount();
+    }
+
+    public void incrementInodeAmount() {
+        superBlock.setInodeAmount(superBlock.getInodeAmount() + 1);
+    }
+
+    public long getInodeStartPage() {
+        return superBlock.getInodeStartPage();
+    }
+
+    public long getInodePages() {
+        return superBlock.getInodePages();
     }
 }

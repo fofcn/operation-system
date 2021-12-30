@@ -20,9 +20,9 @@ import fs.trivial.superblock.SuperBlockManager;
  * -----------------------------------------------------
  *
  * partition layout:
- * ----------------------------------------------------------------------------------------------------------------------
- * | boot block | super block | root directory | i-node bit map | i-node | free space management | files and directories|
- * ---------------------------------------------------------------------------------------------------------------------
+ * -------------------------------------------------------------------------------------------------------------------------------------------
+ * | boot block | super block | root directory | i-node bit map | i-node | free space management| file&i-node bit map | file&i-node | data|
+ * ------------------------------------------------------------------------------------------------------------------------------------------
  * @author jiquanxi
  * @date 2021/12/27
  */
@@ -61,6 +61,42 @@ public class CaSystem implements FileSystem {
      */
     public void initialize() {
 
+    }
+
+    public long createFile(String name) {
+        // 在i-node和file name映射关系中查找文件是否存在
+        long inodeNumber = fileNameInodeManager.getInodeNumber(name);
+        // 根据i-node number查找i-node是否删除
+        if (inodeNumber != -1L && !inodeManager.isInodeDeleted(inodeNumber)) {
+            // 文件已存在
+            return -2L;
+        }
+
+        // 查找i-node 位图是否有空的i-node节点位置
+        int index = inodeBitMapManager.getFreeInodeIndex();
+        if (index == -1) {
+            return -3L;
+        }
+
+        // 创建i-node节点
+        inodeNumber = inodeManager.createInode(index);
+        if (inodeNumber == -1L) {
+            return -4L;
+        }
+
+        // 创建i-node和filename的映射关系;
+        // 在i-node和filename的映射区新建关系
+        // index * (file&i-node).maxLength为数据区偏移起始点
+        fileNameInodeManager.createFileInode(index, inodeNumber, name);
+
+
+        // 更新i-node位图为已使用
+        inodeBitMapManager.setBlockUsed(index);
+
+        // 更新super block inode统计
+        superBlockManager.incrementInodeAmount();
+
+        return inodeNumber;
     }
 
     public DiskHelper getDiskHelper() {

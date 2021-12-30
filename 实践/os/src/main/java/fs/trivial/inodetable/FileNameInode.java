@@ -1,5 +1,7 @@
 package fs.trivial.inodetable;
 
+import helper.annotation.SerializerOrder;
+
 /**
  * file name and inode table.
  *
@@ -7,18 +9,21 @@ package fs.trivial.inodetable;
  * @date 2021/12/28
  */
 public class FileNameInode {
-    private long iNodeNumber;
+    @SerializerOrder(1)
+    private long inodeNumber;
 
+    @SerializerOrder(2)
     private int nameLength;
 
+    @SerializerOrder(3)
     private String name;
 
-    public long getiNodeNumber() {
-        return iNodeNumber;
+    public long getInodeNumber() {
+        return inodeNumber;
     }
 
-    public void setiNodeNumber(long iNodeNumber) {
-        this.iNodeNumber = iNodeNumber;
+    public void setInodeNumber(long inodeNumber) {
+        this.inodeNumber = inodeNumber;
     }
 
     public int getNameLength() {
