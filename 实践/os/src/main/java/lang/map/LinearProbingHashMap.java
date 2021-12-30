@@ -61,7 +61,6 @@ public class LinearProbingHashMap<Key, Value> implements Map<Key, Value> {
         int index;
         for (index = hash(key); keys[index] != null; index = (index + 1) % mod) {
             if (keys[index].equals(key)) {
-                Value val = values[index];
                 // 删除key
                 keys[index] = null;
                 // 删除value

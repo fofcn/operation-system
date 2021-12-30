@@ -65,7 +65,8 @@ public class LruAlg<T extends Comparable<T>> implements ReplacementAlg<T> {
 
         @Override
         public int compareTo(Node o) {
-            return (int) (timestamp - o.getTimestamp());
+            return timestamp - o.getTimestamp() > 0 ? 0 :
+                    timestamp - o.getTimestamp() < 0 ? -1 : 0;
         }
 
         public long getTimestamp() {

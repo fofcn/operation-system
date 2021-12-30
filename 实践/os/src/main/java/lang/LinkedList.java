@@ -1,6 +1,7 @@
 package lang;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * 双向链表
@@ -87,6 +88,10 @@ public class LinkedList<E> implements Iterable<E> {
     }
 
     public void remove(Node<E> node) {
+        if (node == null) {
+            return;
+        }
+
         Node<E> prev = node.prev;
         Node<E> next = node.next;
 
@@ -118,6 +123,10 @@ public class LinkedList<E> implements Iterable<E> {
 
         @Override
         public E next() {
+            if (cur == null) {
+                throw new NoSuchElementException();
+            }
+
             E item = cur.item;
             cur = cur.next;
             return item;
