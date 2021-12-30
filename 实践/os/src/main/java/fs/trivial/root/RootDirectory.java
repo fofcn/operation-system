@@ -2,8 +2,6 @@ package fs.trivial.root;
 
 import helper.annotation.SerializerOrder;
 
-import java.util.List;
-
 /**
  * Root directory of file system.
  *
@@ -12,10 +10,19 @@ import java.util.List;
  */
 public class RootDirectory {
 
-    @SerializerOrder
+    @SerializerOrder(1)
+    private int nameLength;
+
+    @SerializerOrder(2)
     private String name;
 
-    private List<Long> iNodeNumber;
+    public int getNameLength() {
+        return nameLength;
+    }
+
+    public void setNameLength(int nameLength) {
+        this.nameLength = nameLength;
+    }
 
     public String getName() {
         return name;

@@ -55,6 +55,12 @@ public class SuperBlock {
     @SerializerOrder(12)
     private long dataStartPage;
 
+    @SerializerOrder(13)
+    private long inodeBitMapPages;
+
+    @SerializerOrder(14)
+    private long inodeBitMapStartPage;
+
     public int getMagic() {
         return magic;
     }
@@ -149,5 +155,21 @@ public class SuperBlock {
 
     public void setDataStartPage(long dataStartPage) {
         this.dataStartPage = dataStartPage;
+    }
+
+    public long getInodeBitMapPages() {
+        return inodeBitMapPages;
+    }
+
+    public void setInodeBitMapPages(long inodeBitMapPages) {
+        this.inodeBitMapPages = inodeBitMapPages;
+    }
+
+    public long getInodeBitMapStartPage() {
+        return inodeBitMapStartPage;
+    }
+
+    public void setInodeBitMapStartPage(long inodeBitMapStartPage) {
+        this.inodeBitMapStartPage = inodeBitMapStartPage;
     }
 }

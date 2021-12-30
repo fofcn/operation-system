@@ -21,7 +21,7 @@ import fs.trivial.superblock.SuperBlockManager;
  *
  * partition layout:
  * ----------------------------------------------------------------------------------------------------------------------
- * | boot block | super block | free space management | i-node bit map | i-node | root directory | files and directories|
+ * | boot block | super block | root directory | i-node bit map | i-node | free space management | files and directories|
  * ---------------------------------------------------------------------------------------------------------------------
  * @author jiquanxi
  * @date 2021/12/27
