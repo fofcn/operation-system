@@ -105,7 +105,7 @@ public class SerializerTest {
 
         buffer.flip();
         byte[] bytes = buffer.array();
-        System.out.println(bytes);
+        StdOut.println(bytes);
     }
 
     public static class NameValuePair<N, V> {

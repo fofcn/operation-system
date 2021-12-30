@@ -1,5 +1,6 @@
 package fs.trivial.superblock;
 
+import helper.annotation.FixedByteSerializer;
 import helper.annotation.SerializerOrder;
 
 /**
@@ -8,7 +9,7 @@ import helper.annotation.SerializerOrder;
  * @author jiquanxi
  * @date 2021/12/28
  */
-public class SuperBlock {
+public class SuperBlock implements FixedByteSerializer {
 
     @SerializerOrder(1)
     private int magic;

@@ -1,5 +1,6 @@
 package fs.trivial.inode;
 
+import helper.annotation.FixedByteSerializer;
 import helper.annotation.SerializerOrder;
 
 /**
@@ -8,7 +9,7 @@ import helper.annotation.SerializerOrder;
  * @author jiquanxi
  * @date 2021/12/28
  */
-public class Inode {
+public class Inode implements FixedByteSerializer {
     /**
      * i-node index number
      */
@@ -92,4 +93,5 @@ public class Inode {
     public void setLength(long length) {
         this.length = length;
     }
+
 }

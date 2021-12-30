@@ -21,6 +21,42 @@ import java.util.List;
 public class ByteArraySerializer {
 
     /**
+     * 评估定长编码的类的字节长度
+     * @param classOfObj
+     * @return
+     */
+    public static int evaluateByteLength(Class classOfObj) {
+        List<NameValuePair<Integer, Field>> pairs = getNameValuePairs(classOfObj);
+
+        // fill bytes to buffer
+        int length = 0;
+        for (NameValuePair<Integer, Field> nameValuePair : pairs) {
+            try {
+                if (!nameValuePair.getField().isAccessible()) {
+                    nameValuePair.getField().setAccessible(true);
+                }
+
+                // get this field's type
+                Class<?> fieldType = nameValuePair.getField().getType();
+                if (fieldType.getCanonicalName().equals("java.lang.String")) {
+                } else if (fieldType.getCanonicalName().equals("int")) {
+                    length += 4;
+                } else if (fieldType.getCanonicalName().equals("long")) {
+                    length += 8;
+                } else {
+                    throw new OperationNotSupportedException("not support this type: " + fieldType.getCanonicalName());
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return length;
+    }
+
+    /**
      * serialize class to byte array.
      * @param obj instance of classOfObj
      * @param classOfObj class info

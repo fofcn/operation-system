@@ -18,7 +18,7 @@ public class CaSystemTest {
         partition.setIndex(0);
         partition.setStart(0L);
         partition.setEnd(1024L * 1024);
-        CaSystem caSystem = new CaSystem(partition, 1 * 1024);
+        CaSystem caSystem = new CaSystem("ca_fs_test_disk", partition, 1 * 1024);
         caSystem.initialize();
     }
 }

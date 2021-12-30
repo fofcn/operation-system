@@ -3,12 +3,15 @@ package fs.trivial;
 import fs.FileSystem;
 import fs.helper.DiskHelper;
 import fs.trivial.boot.BootBlockManager;
-import fs.trivial.freespace.FreeSpaceManager;
+import fs.trivial.freespace.BitMapFreeSpaceManager;
 import fs.trivial.inode.InodeManager;
 import fs.trivial.inodebitmap.InodeBitMapManager;
 import fs.trivial.inodetable.FileNameInodeManager;
 import fs.trivial.root.RootDirectoryManager;
 import fs.trivial.superblock.SuperBlockManager;
+import util.StdOut;
+
+import java.io.IOException;
 
 /**
  * Continuous allocation file system.
@@ -28,30 +31,47 @@ import fs.trivial.superblock.SuperBlockManager;
  */
 public class CaSystem implements FileSystem {
 
+    private final String diskPath;
 
     private final Partition partition;
 
     private final int blockSize;
 
-    private FreeSpaceManager freeSpaceManager;
-
     private DiskHelper diskHelper;
+
+    private BitMapFreeSpaceManager freeSpaceManager;
 
     private BootBlockManager bootBlockManager;
 
     private SuperBlockManager superBlockManager;
 
+    private RootDirectoryManager rootDirectoryManager;
+
     private InodeBitMapManager inodeBitMapManager;
 
     private InodeManager inodeManager;
 
-    private RootDirectoryManager rootDirectoryManager;
-
     private FileNameInodeManager fileNameInodeManager;
 
-    public CaSystem(Partition partition, final int blockSize) {
+    public CaSystem(final String diskPath, Partition partition, final int blockSize) {
+        this.diskPath = diskPath;
         this.partition = partition;
         this.blockSize = blockSize;
+
+        long partitionLength = partition.getStart() - partition.getEnd();
+        try {
+            this.diskHelper = new DiskHelper("test", partitionLength);
+        } catch (IOException e) {
+            StdOut.println(e);
+        }
+
+        this.bootBlockManager = new BootBlockManager(this);
+        this.superBlockManager = new SuperBlockManager(this);
+        this.rootDirectoryManager = new RootDirectoryManager(this);
+        this.inodeBitMapManager = new InodeBitMapManager(this);
+        this.inodeManager = new InodeManager(this);
+        this.freeSpaceManager = new BitMapFreeSpaceManager(this);
+        this.fileNameInodeManager = new FileNameInodeManager(this);
     }
 
     /**
@@ -60,7 +80,14 @@ public class CaSystem implements FileSystem {
      * free space management,i-node,root directory,files and directories
      */
     public void initialize() {
-
+        bootBlockManager.initialize();
+        superBlockManager.initialize();
+        rootDirectoryManager.initialize();
+        rootDirectoryManager.initialize();
+        inodeBitMapManager.initialize();
+        inodeManager.initialize();
+        freeSpaceManager.initialize();
+        fileNameInodeManager.initialize();
     }
 
     public long createFile(String name) {

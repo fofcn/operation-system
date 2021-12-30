@@ -1,5 +1,6 @@
 package fs.trivial.boot;
 
+import helper.annotation.FixedByteSerializer;
 import helper.annotation.SerializerOrder;
 
 /**
@@ -8,7 +9,7 @@ import helper.annotation.SerializerOrder;
  * @author jiquanxi
  * @date 2021/12/28
  */
-public class BootBlock {
+public class BootBlock implements FixedByteSerializer {
 
     /**
      * 是否初始化
