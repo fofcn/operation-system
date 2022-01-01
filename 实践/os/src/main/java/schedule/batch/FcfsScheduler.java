@@ -22,6 +22,7 @@ public class FcfsScheduler implements Scheduler {
     }
     @Override
     public boolean putTask(Task task) {
+        // 先来先服务就绪队列中按照任务提交的先后顺序来排队
         boolean offerResult = taskQueue.offer(task);
         if (!offerResult) {
             StdOut.println("queue failed");
