@@ -1,5 +1,6 @@
 package schedule.batch;
 
+import schedule.PutTaskResult;
 import schedule.Scheduler;
 import schedule.support.Task;
 import util.StdOut;
@@ -21,16 +22,20 @@ public class FcfsScheduler implements Scheduler {
         this.taskQueue = new ArrayBlockingQueue<>(2000);
     }
     @Override
-    public boolean putTask(Task task) {
+    public PutTaskResult putTask(Task task) {
         // 先来先服务就绪队列中按照任务提交的先后顺序来排队
+        PutTaskResult putTaskResult = new PutTaskResult();
         boolean offerResult = taskQueue.offer(task);
         if (!offerResult) {
             StdOut.println("queue failed");
-            return false;
+            putTaskResult.setEnqueued(false);
+            return putTaskResult;
         }
 
+        putTaskResult.setEnqueued(true);
+        putTaskResult.setMustRunNow(false);
         StdOut.println("enqueue size: [" + taskQueue.size() + "]");
-        return true;
+        return putTaskResult;
     }
 
     @Override

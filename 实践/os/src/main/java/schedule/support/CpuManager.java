@@ -1,5 +1,6 @@
 package schedule.support;
 
+import schedule.PutTaskResult;
 import schedule.Scheduler;
 import schedule.SchedulerFactory;
 
@@ -108,8 +109,8 @@ public class CpuManager {
         // 队列满了说明任务占用CPU时间过长，这时需要激活其他CPU进行工作
         // 查看现在正在运行的CPU数量是不是小于coreCpuCount
         // 如果小于等于coreCpuCount，那么直接创建CPU运行任务
-        boolean isEnqueue = scheduler.putTask(task);
-        if (isEnqueue) {
+        PutTaskResult putTaskResult = scheduler.putTask(task);
+        if (putTaskResult.isEnqueued() && !putTaskResult.isMustRunNow()) {
             int c = ctl.get();
             if (workerCountOf(c) < coreCpuCount) {
                 // 添加CPU到CPU队列
@@ -121,6 +122,10 @@ public class CpuManager {
             if (addCpu(task, false)) {
                 return;
             }
+
+            // 处理当前没有CPU可以执行情况
+            // 如果当前CPU都忙，那么需要中断一个CPU的执行任务
+            // 实现方式使用park线程的方式 LockSupport.park();
         }
 
         throw new RuntimeException("Tasks are stacked.");

@@ -1,12 +1,13 @@
 package schedule.interactive;
 
+import schedule.PutTaskResult;
 import schedule.Scheduler;
 import schedule.support.Task;
 
 public class HpfScheduler implements Scheduler {
     @Override
-    public boolean putTask(Task task) {
-        return false;
+    public PutTaskResult putTask(Task task) {
+        return null;
     }
 
     @Override

@@ -14,7 +14,7 @@ public interface Scheduler {
      * 放置任务，根据调度算法进行任务重排
      * @param task
      */
-    boolean putTask(Task task);
+    PutTaskResult putTask(Task task);
 
     /**
      * 从调度器获取一个任务
