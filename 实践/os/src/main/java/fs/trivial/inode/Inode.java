@@ -46,6 +46,12 @@ public class Inode implements FixedByteSerializer {
     @SerializerOrder(6)
     private long length = 0;
 
+    /**
+     * 是否删除
+     */
+    @SerializerOrder(7)
+    private int isDeleted = 0;
+
     public long getNumber() {
         return number;
     }
@@ -94,4 +100,11 @@ public class Inode implements FixedByteSerializer {
         this.length = length;
     }
 
+    public int getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(int isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }

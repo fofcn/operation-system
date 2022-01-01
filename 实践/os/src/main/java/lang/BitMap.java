@@ -26,7 +26,7 @@ public class BitMap {
     }
 
     public BitMap(byte[] bytes) {
-        this.size = bytes.length;
+        this.size = bytes.length * 8;
         bitsMap = new int[bytes.length / 4];
         for (int i = 0, j = 0; i < bytes.length; i = i + 4, j++) {
             int intWord = (bytes[i] << 24) & (bytes[i + 1] << 16) & (bytes[i + 2] << 8) & bytes[i + 3];
@@ -96,5 +96,9 @@ public class BitMap {
         }
 
         return byteBuffer.array();
+    }
+
+    public int size() {
+        return size;
     }
 }

@@ -50,9 +50,19 @@ public class InodeBitMapManager implements Manager {
     }
 
     public int getFreeInodeIndex() {
-        return 0;
+        for (int i = 0; i < bitMap.size(); i++) {
+            boolean used = bitMap.checkBit(i);
+            if (!used) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     public void setBlockUsed(int index) {
+        bitMap.setBit(index);
+
+        // todo 记得处理持久化到磁盘
     }
 }

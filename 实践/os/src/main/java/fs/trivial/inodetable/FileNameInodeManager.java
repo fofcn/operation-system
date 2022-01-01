@@ -65,6 +65,11 @@ public class FileNameInodeManager implements Manager {
         return -1L;
     }
 
-    public void createFileInode(int index, long inodeNumber, String name) {
+    public int createFileInode(int index, long inodeNumber, String name) {
+        // 根据位图索引定位到硬盘偏移位置
+        // 创建i-node和file name映射对象
+        // 序列化到硬盘中
+        // 期间产生错误就报错
+        return 0;
     }
 }

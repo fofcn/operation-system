@@ -2,6 +2,7 @@ package fs.trivial.inode;
 
 import fs.trivial.CaSystem;
 import fs.trivial.Manager;
+import helper.annotation.FixedByteSerializer;
 import lang.serializer.ByteArraySerializer;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -49,8 +50,7 @@ public class InodeManager implements Manager {
         Inode inode = new Inode();
         inode.setNumber(inodeNumber.incrementAndGet());
         // 通过位图索引定位位置
-        // todo i-node固定长度获取
-        int inodeByteLength = 0;
+        int inodeByteLength = FixedByteSerializer.getSerializeLength(Inode.class);
         long writeOffset = index * inodeByteLength + dataStartOffset;
         byte[] inodeBytes = ByteArraySerializer.serialize(inode, Inode.class);
         caSystem.getDiskHelper().write(inodeBytes, writeOffset);
@@ -64,6 +64,9 @@ public class InodeManager implements Manager {
     }
 
     public boolean isInodeDeleted(long inodeNumber) {
+        // 通过i-node number查找i-node
+        // 找到就将i-node加载到hash缓存中
+        // 无法找到就返回false：todo 更精细点做就是返回一个错误对象，里面写明错误码和错误信息
         return false;
     }
 }

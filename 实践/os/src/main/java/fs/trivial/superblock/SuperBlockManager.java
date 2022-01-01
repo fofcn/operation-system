@@ -131,6 +131,8 @@ public class SuperBlockManager implements Manager {
 
     public void incrementInodeAmount() {
         superBlock.setInodeAmount(superBlock.getInodeAmount() + 1);
+        // todo 记得处理磁盘持久化和互斥问题
+        // todo s互斥就原子对象就可以了 AtomicLong
     }
 
     public long getInodeStartPage() {
