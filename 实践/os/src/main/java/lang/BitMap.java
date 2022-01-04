@@ -21,15 +21,15 @@ public class BitMap {
 
     public BitMap(int size) {
         this.size = size;
-        long buckets = size / 32 + size % 32 == 0 ? 0 : 1;
-        bitsMap = new int[(int) buckets];
+        int buckets = (size / 32) + (size % 32 == 0 ? 0 : 1);
+        bitsMap = new int[buckets];
     }
 
     public BitMap(byte[] bytes) {
         this.size = bytes.length * 8;
         bitsMap = new int[bytes.length / 4];
         for (int i = 0, j = 0; i < bytes.length; i = i + 4, j++) {
-            int intWord = (bytes[i] << 24) & (bytes[i + 1] << 16) & (bytes[i + 2] << 8) & bytes[i + 3];
+            int intWord = (bytes[i] << 24) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | bytes[i + 3];
             bitsMap[j] = intWord;
         }
     }
@@ -47,7 +47,7 @@ public class BitMap {
         int index = n / 32;
 
         // 查询元素位的偏移
-        int offset = n % 32 - 1;
+        int offset = n % 31;
 
         bitsMap[index] |= BIT_VALUE[offset];
     }
@@ -61,7 +61,7 @@ public class BitMap {
         int index = n / 32;
 
         // 查询元素位的偏移
-        int offset = n % 32 - 1;
+        int offset = n % 31;
 
         bitsMap[index] &= (~BIT_VALUE[offset]);
     }
@@ -71,7 +71,7 @@ public class BitMap {
         int index = n / 32;
 
         // 查询元素位的偏移
-        int offset = n % 32 - 1;
+        int offset = n % 31;
 
         int idxVal = bitsMap[index];
         return (idxVal & BIT_VALUE[offset]) != 0;
@@ -100,5 +100,16 @@ public class BitMap {
 
     public int size() {
         return size;
+    }
+
+    public byte[] getBytes(int index) {
+        int i = index / 32;
+        if (i >= bitsMap.length) {
+            return null;
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        buffer.putInt(bitsMap[i]);
+        return buffer.array();
     }
 }

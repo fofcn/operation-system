@@ -19,20 +19,24 @@ public class InodeManager implements Manager {
 
     private final CaSystem caSystem;
 
-    private final long dataStartOffset;
+    private long dataStartOffset;
 
-    private final long dataEndOffset;
+    private long dataEndOffset;
+
+    private final int inodeSize;
 
     public InodeManager(CaSystem caSystem) {
         this.caSystem = caSystem;
-        this.dataStartOffset = caSystem.getSuperBlockManager().getInodeStartPage() * caSystem.getBlockSize();
-        this.dataEndOffset = dataStartOffset + caSystem.getSuperBlockManager().getInodePages() * caSystem.getBlockSize();
+        this.inodeSize = getIndexNodeSize();
     }
 
     @Override
     public boolean initialize() {
+        this.dataStartOffset = caSystem.getSuperBlockManager().getInodeStartPage() * caSystem.getBlockSize();
+        this.dataEndOffset = dataStartOffset + caSystem.getSuperBlockManager().getInodePages() * caSystem.getBlockSize();
+
         // 根据super block中的i-node数量加载i-node
-        return false;
+        return true;
     }
 
 
@@ -65,6 +69,17 @@ public class InodeManager implements Manager {
 
     public boolean isInodeDeleted(long inodeNumber) {
         // 通过i-node number查找i-node
+        for (long i = dataStartOffset, j = 0; i < dataEndOffset && j < caSystem.getSuperBlockManager().getInodeAmount(); i = i + inodeSize, j++) {
+            byte[] inodeBytes = caSystem.getDiskHelper().read(i, inodeSize);
+            Inode inode = ByteArraySerializer.deserialize(Inode.class, inodeBytes);
+            if (inode == null) {
+                return false;
+            }
+
+            if (inode.getNumber() == inodeNumber && inode.getIsDeleted() == 1) {
+                return true;
+            }
+        }
         // 找到就将i-node加载到hash缓存中
         // 无法找到就返回false：todo 更精细点做就是返回一个错误对象，里面写明错误码和错误信息
         return false;

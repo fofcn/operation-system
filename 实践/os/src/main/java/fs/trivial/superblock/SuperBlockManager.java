@@ -14,14 +14,20 @@ public class SuperBlockManager implements Manager {
 
     private static final int FS_MAGIC_NUMBER = 0x12345678;
 
-    private static final int MAX_PATH = 255;
+    public static final int MAX_PATH = 255;
 
     private SuperBlock superBlock;
 
     private final CaSystem caSystem;
 
+    private final int startOffset;
+
+    private final int endOffset;
+
     public SuperBlockManager(final CaSystem caSystem) {
         this.caSystem = caSystem;
+        this.startOffset = 1 * caSystem.getBlockSize();
+        this.endOffset = 2 * caSystem.getBlockSize();
     }
 
     @Override
@@ -44,7 +50,7 @@ public class SuperBlockManager implements Manager {
             superBlock.setRootDirectoryStartPage(2);
 
             // 计算i-node bit map的块
-            long inodeBitMapPages = (blockAmount / (8 * caSystem.getBlockSize()));
+            long inodeBitMapPages = (blockAmount / (8 * caSystem.getBlockSize())) + (blockAmount % (8 * caSystem.getBlockSize())) == 0 ? 0 : 1;
             superBlock.setInodeBitMapStartPage(3);
             superBlock.setInodeBitMapPages(inodeBitMapPages);
 
@@ -78,6 +84,9 @@ public class SuperBlockManager implements Manager {
             // 写入硬盘
             byte[] superBlockBytes = ByteArraySerializer.serialize(superBlock, SuperBlock.class);
             caSystem.getDiskHelper().write(superBlockBytes, caSystem.getBlockSize());
+        } else {
+            byte[] superBlockBytes = caSystem.getDiskHelper().read(startOffset, caSystem.getBlockSize());
+            superBlock = ByteArraySerializer.deserialize(SuperBlock.class, superBlockBytes);
         }
 
         return true;
@@ -90,7 +99,7 @@ public class SuperBlockManager implements Manager {
 
     @Override
     public void shutdown() {
-
+        caSystem.getDiskHelper().shutdown();
     }
 
     public long getFreeSpacePages() {
@@ -133,6 +142,9 @@ public class SuperBlockManager implements Manager {
         superBlock.setInodeAmount(superBlock.getInodeAmount() + 1);
         // todo 记得处理磁盘持久化和互斥问题
         // todo s互斥就原子对象就可以了 AtomicLong
+
+        byte[] superBlockBytes = ByteArraySerializer.serialize(superBlock, SuperBlock.class);
+        caSystem.getDiskHelper().write(superBlockBytes, startOffset);
     }
 
     public long getInodeStartPage() {

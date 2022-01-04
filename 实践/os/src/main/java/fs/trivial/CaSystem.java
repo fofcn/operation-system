@@ -12,6 +12,7 @@ import fs.trivial.superblock.SuperBlockManager;
 import util.StdOut;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Continuous allocation file system.
@@ -58,9 +59,9 @@ public class CaSystem implements FileSystem {
         this.partition = partition;
         this.blockSize = blockSize;
 
-        long partitionLength = partition.getStart() - partition.getEnd();
+        long partitionLength = partition.getEnd() - partition.getStart();
         try {
-            this.diskHelper = new DiskHelper("test", partitionLength);
+            this.diskHelper = new DiskHelper(diskPath, partitionLength);
         } catch (IOException e) {
             StdOut.println(e);
         }
@@ -88,6 +89,8 @@ public class CaSystem implements FileSystem {
         inodeManager.initialize();
         freeSpaceManager.initialize();
         fileNameInodeManager.initialize();
+
+        bootBlockManager.hasInitialized();
     }
 
     public long createFile(String name) {
@@ -97,15 +100,21 @@ public class CaSystem implements FileSystem {
         // 如果i-node不存在，则查找i-node位图，根据位图索引在i-node区创建inode
         // 如果i-node存在，则查看i-node是否删除，如果删除则可以直接复用该i-node，
         // 并重置文件元数据
-        if (inodeNumber != -1L && !inodeManager.isInodeDeleted(inodeNumber)) {
-            // 错误处理：文件已经存在
-            return -2L;
+        if (inodeNumber != -1L) {
+            // todo 错误处理：文件已经存在
+            boolean isDeleted = inodeManager.isInodeDeleted(inodeNumber);
+            if (!isDeleted) {
+                return -2L;
+            }
+
         }
+
+
 
         // 查找i-node 位图是否有空的i-node节点位置
         int index = inodeBitMapManager.getFreeInodeIndex();
         if (index == -1) {
-            // 错误处理：位图中无空闲位表示i-node数量已经被使用完
+            // todo 错误处理：位图中无空闲位表示i-node数量已经被使用完
             // 或代码逻辑错误-^-
             return -3L;
         }
@@ -113,7 +122,7 @@ public class CaSystem implements FileSystem {
         // 创建i-node节点
         inodeNumber = inodeManager.createInode(index);
         if (inodeNumber == -1L) {
-            // 错误处理：i-node节点创建失败
+            // todo 错误处理：i-node节点创建失败
             return -4L;
         }
 
@@ -121,7 +130,7 @@ public class CaSystem implements FileSystem {
         // 在i-node和filename的映射区新建关系
         // index * (file&i-node).maxLength为数据区偏移起始点
         fileNameInodeManager.createFileInode(index, inodeNumber, name);
-        // 错误处理：创建i-node和file name 映射失败
+        // todo 错误处理：创建i-node和file name 映射失败
 
         // 更新i-node位图为已使用
         inodeBitMapManager.setBlockUsed(index);
@@ -130,6 +139,10 @@ public class CaSystem implements FileSystem {
         superBlockManager.incrementInodeAmount();
 
         return inodeNumber;
+    }
+
+    public List<String> getFileList() {
+        return fileNameInodeManager.getFileList();
     }
 
     public DiskHelper getDiskHelper() {
@@ -155,6 +168,4 @@ public class CaSystem implements FileSystem {
     public SuperBlockManager getSuperBlockManager() {
         return superBlockManager;
     }
-
-
 }

@@ -41,7 +41,6 @@ public class DiskHelper {
     public byte[] read(long offset, int length) {
         ByteBuffer buffer = mappedByteBuffer.slice();
         buffer.position((int) offset);
-        buffer.limit(length);
         byte[] bytes = new byte[length];
         buffer.get(bytes);
         buffer.clear();

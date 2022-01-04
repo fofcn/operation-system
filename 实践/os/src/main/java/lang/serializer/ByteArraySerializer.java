@@ -142,7 +142,8 @@ public class ByteArraySerializer {
                     }
                     byte[] val = new byte[strLength];
                     byteBuffer.get(val);
-                    pair.getField().set(t, val);
+                    String str = new String(val, StandardCharsets.UTF_8);
+                    pair.getField().set(t, str);
                 } else if (fieldType.getCanonicalName().equals("int")) {
                     int val = byteBuffer.getInt();
                     pair.getField().set(t, val);

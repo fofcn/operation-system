@@ -31,7 +31,7 @@ public class BootBlockManager implements Manager {
         // load first block,check if the file system had initialize.
         byte[] bootBlockBytes = caSystem.getDiskHelper().read(0, caSystem.getBlockSize());
         bootBlock = ByteArraySerializer.deserialize(BootBlock.class, bootBlockBytes);
-        if (bootBlock == null ||  bootBlock.getIsInit() == FS_IS_INITIALIZED) {
+        if (bootBlock == null ||  bootBlock.getIsInit() == FS_NOT_INITIALIZED) {
             // if the file system is not initialize,initialize it.
             // Initialize the boot block of the file system
             bootBlock = new BootBlock();
@@ -57,5 +57,11 @@ public class BootBlockManager implements Manager {
 
     public boolean getIsInit() {
         return bootBlock.getIsInit() == FS_IS_INITIALIZED;
+    }
+
+    public void hasInitialized() {
+        bootBlock.setIsInit(FS_IS_INITIALIZED);
+        byte[] bootBlockBytes = ByteArraySerializer.serialize(bootBlock, BootBlock.class);
+        caSystem.getDiskHelper().write(bootBlockBytes, 0);
     }
 }

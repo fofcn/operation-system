@@ -11,7 +11,7 @@ import lang.serializer.ByteArraySerializer;
  * @date 2021/12/29
  */
 public class RootDirectoryManager implements Manager {
-    private static final String ROOT_DIR = "/";
+    public static final String ROOT_DIR = "/";
 
     private final CaSystem caSystem;
 
