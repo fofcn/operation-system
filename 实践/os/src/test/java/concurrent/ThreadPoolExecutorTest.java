@@ -69,6 +69,27 @@ public class ThreadPoolExecutorTest {
         );
     }
 
+    /**
+     * 测试在全部任务终止后，再次向线程池提交任务
+     * @throws InterruptedException
+     */
+    @Test
+    public void testAfterTerminatedReputTask() throws InterruptedException {
+        // 向线程池提交n + m个任务
+        submitTask(threadPoolExecutor, pass, maxSizeN + queueSizeM);
+        startControlThread(pass, maxSizeN, threadPoolExecutor);
+        StdOut.println("-----阶段1执行完成--------");
+        StdOut.println("-----线程池任务队列大小--------:  " + threadPoolExecutor.getQueue().size());
+        StdOut.println("-----重新提交新任务--------");
+        // 向线程池提交m个任务
+        // 如果向线程池提交超过m个任务可能会报错（注意是可能呦，因为你在提交任务的时候任务的过程中线程池中活动的线程可能已经消费了）
+        // 因为此时线程池的活动线程数量为n个，在提交新任务的时候不会直接创建新的线程执行
+        // 而是任务入队，如果超过任务队列大小m，则会执行执行拒绝策略抛出异常
+        pass.set(false);
+        submitTask(threadPoolExecutor, pass, queueSizeM);
+        startControlThread(pass, maxSizeN, threadPoolExecutor);
+    }
+
     @Test
     public void testRejectTask() throws InterruptedException {
         // 向线程池提交n + m + 1个任务
@@ -125,7 +146,7 @@ public class ThreadPoolExecutorTest {
      */
     private void submitTask(ThreadPoolExecutor threadPoolExecutor, AtomicBoolean pass, int taskCount) {
         for (int i = 0; i < taskCount; i++) {
-            threadPoolExecutor.submit(() -> {
+            threadPoolExecutor.execute(() -> {
                 while (!pass.get()) {
                     StdOut.println(Thread.currentThread().getName() + ": Thread running..." );
                     sleep(1000);

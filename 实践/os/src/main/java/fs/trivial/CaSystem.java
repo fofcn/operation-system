@@ -109,8 +109,6 @@ public class CaSystem implements FileSystem {
 
         }
 
-
-
         // 查找i-node 位图是否有空的i-node节点位置
         int index = inodeBitMapManager.getFreeInodeIndex();
         if (index == -1) {
