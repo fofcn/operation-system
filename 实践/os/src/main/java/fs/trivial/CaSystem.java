@@ -139,6 +139,27 @@ public class CaSystem implements FileSystem {
         return inodeNumber;
     }
 
+    public long writeFile(long inodeNumber, byte[] content) {
+        // 根据i-node number查找i-node信息
+
+        // 先在缓存查找i-node信息
+
+        // 如果无法找到则回硬盘查找
+
+        // 在磁盘找到了就写到缓存中
+
+        // 根据内容长度计算块的数量
+
+        // 从空闲区管理中查找空闲块,如果空闲块不足则直接报错：No space left.
+
+        // 将内容写入空闲块并刷盘
+
+        // 更新空闲块为已使用并刷盘
+
+        // 更新i-node信息长度并刷盘
+        return 0L;
+    }
+
     public List<String> getFileList() {
         return fileNameInodeManager.getFileList();
     }

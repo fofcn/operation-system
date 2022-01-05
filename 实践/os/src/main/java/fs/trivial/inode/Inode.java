@@ -107,4 +107,5 @@ public class Inode implements FixedByteSerializer {
     public void setIsDeleted(int isDeleted) {
         this.isDeleted = isDeleted;
     }
+
 }

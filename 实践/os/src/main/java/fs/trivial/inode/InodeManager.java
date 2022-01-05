@@ -5,8 +5,6 @@ import fs.trivial.Manager;
 import helper.annotation.FixedByteSerializer;
 import lang.serializer.ByteArraySerializer;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  * I-node manager of file system.
  *
@@ -14,8 +12,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * @date 2021/12/28
  */
 public class InodeManager implements Manager {
-
-    private AtomicLong inodeNumber = new AtomicLong(1L);
 
     private final CaSystem caSystem;
 
@@ -52,7 +48,7 @@ public class InodeManager implements Manager {
 
     public long createInode(int index) {
         Inode inode = new Inode();
-        inode.setNumber(inodeNumber.incrementAndGet());
+        inode.setNumber(index);
         // 通过位图索引定位位置
         int inodeByteLength = FixedByteSerializer.getSerializeLength(Inode.class);
         long writeOffset = index * inodeByteLength + dataStartOffset;
