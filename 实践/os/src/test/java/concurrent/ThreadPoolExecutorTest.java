@@ -69,6 +69,13 @@ public class ThreadPoolExecutorTest {
         );
     }
 
+    @Test
+    public void testRejectTask() throws InterruptedException {
+        // 向线程池提交n + m + 1个任务
+        submitTask(threadPoolExecutor, pass, maxSizeN + queueSizeM + 1);
+        startControlThread(pass, maxSizeN, threadPoolExecutor);
+    }
+
     /**
      * 测试线程池线程数量等于最大线程数用例
      * @throws InterruptedException
