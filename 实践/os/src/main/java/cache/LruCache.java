@@ -80,7 +80,22 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
 
             // 如果链表不为空，那么获取当前链表
             // 将缓存内容加入到链表头
-            listNode.addFirst(cacheNode);
+            // 查找链表中的是否已经存在该key
+            CacheNode<K, V> exists = null;
+            for (CacheNode<K, V> node : listNode) {
+                // 已经存在则更新value值
+                if (node.key.equals(k)) {
+                    exists = node;
+                    break;
+                }
+            }
+
+            if (exists != null) {
+                exists.value = v;
+                listNode.moveToFirst(exists);
+            } else {
+                listNode.addFirst(cacheNode);
+            }
         }
 
         // 当前缓存容量加1
@@ -333,15 +348,20 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
         }
 
         private class LinkedListNodeIterator implements Iterator<CacheNode<K, V>> {
+            private CacheNode<K, V> cur;
+
+            public LinkedListNodeIterator() {
+                this.cur = first;
+            }
 
             @Override
             public boolean hasNext() {
-                return false;
+                return cur.next != null;
             }
 
             @Override
             public CacheNode<K, V> next() {
-                return null;
+                return cur;
             }
         }
     }
@@ -349,7 +369,7 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
     private class CacheNode<K, V> {
         private final K key;
 
-        private final V value;
+        private V value;
 
         private CacheNode<K, V> prev;
 

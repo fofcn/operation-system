@@ -4,6 +4,8 @@ import fs.FileSystem;
 import fs.helper.DiskHelper;
 import fs.trivial.boot.BootBlockManager;
 import fs.trivial.freespace.BitMapFreeSpaceManager;
+import fs.trivial.freespace.GetFreeSpaceIndexes;
+import fs.trivial.inode.Inode;
 import fs.trivial.inode.InodeManager;
 import fs.trivial.inodebitmap.InodeBitMapManager;
 import fs.trivial.inodetable.FileNameInodeManager;
@@ -11,6 +13,7 @@ import fs.trivial.root.RootDirectoryManager;
 import fs.trivial.superblock.SuperBlockManager;
 import util.StdOut;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -54,6 +57,8 @@ public class CaSystem implements FileSystem {
 
     private FileNameInodeManager fileNameInodeManager;
 
+    private DataManager dataManager;
+
     public CaSystem(final String diskPath, Partition partition, final int blockSize) {
         this.diskPath = diskPath;
         this.partition = partition;
@@ -73,6 +78,7 @@ public class CaSystem implements FileSystem {
         this.inodeManager = new InodeManager(this);
         this.freeSpaceManager = new BitMapFreeSpaceManager(this);
         this.fileNameInodeManager = new FileNameInodeManager(this);
+        this.dataManager = new DataManager(this);
     }
 
     /**
@@ -139,24 +145,36 @@ public class CaSystem implements FileSystem {
         return inodeNumber;
     }
 
-    public long writeFile(long inodeNumber, byte[] content) {
+    public long writeFile(long inodeNumber, byte[] content) throws FileNotFoundException {
+        if (inodeNumber < 0 || content == null) {
+            throw new IllegalArgumentException();
+        }
+
         // 根据i-node number查找i-node信息
-
         // 先在缓存查找i-node信息
-
         // 如果无法找到则回硬盘查找
-
         // 在磁盘找到了就写到缓存中
+        Inode inode = inodeManager.getInode(inodeNumber);
+        if (inode == null) {
+            throw new FileNotFoundException("未找到文件");
+        }
 
         // 根据内容长度计算块的数量
+        int blocks = content.length / blockSize + (content.length % blockSize == 0 ? 0 : 1);
 
         // 从空闲区管理中查找空闲块,如果空闲块不足则直接报错：No space left.
+        GetFreeSpaceIndexes result = freeSpaceManager.getFreeIndexes(blocks);
+        if (result == null) {
+            throw new Error("No space left.");
+        }
 
         // 将内容写入空闲块并刷盘
-
+        dataManager.writeData(content, result.getStart(), result.getEnd());
         // 更新空闲块为已使用并刷盘
-
+        freeSpaceManager.setBlockUsed(result.getStart(), result.getEnd());
         // 更新i-node信息长度并刷盘
+        inodeManager.updateOnWrite(inode, content.length, result.getStart());
+
         return 0L;
     }
 

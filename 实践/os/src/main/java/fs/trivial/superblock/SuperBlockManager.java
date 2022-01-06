@@ -154,4 +154,8 @@ public class SuperBlockManager implements Manager {
     public long getInodePages() {
         return superBlock.getInodePages();
     }
+
+    public long getDataStartPage() {
+        return superBlock.getDataStartPage();
+    }
 }

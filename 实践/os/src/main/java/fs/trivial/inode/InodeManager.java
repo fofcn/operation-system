@@ -53,27 +53,38 @@ public class InodeManager implements Manager {
         Inode inode = new Inode();
         inode.setNumber(index);
         // 通过位图索引定位位置
-        int inodeByteLength = FixedByteSerializer.getSerializeLength(Inode.class);
-        long writeOffset = index * inodeByteLength + dataStartOffset;
-        byte[] inodeBytes = ByteArraySerializer.serialize(inode, Inode.class);
-        caSystem.getDiskHelper().write(inodeBytes, writeOffset);
+
+        flushInode(inode);
 
         // 将inode加入到缓存中
         inodeCache.set(inode);
         return 0L;
     }
 
-    public static int getIndexNodeSize() {
+
+
+    public int getIndexNodeSize() {
         Inode iNode = new Inode();
         byte[] iNodeBytes = ByteArraySerializer.serialize(iNode, Inode.class);
         return iNodeBytes.length;
     }
 
     public boolean isInodeDeleted(long inodeNumber) {
+        Inode inode = getInodeInternal(inodeNumber);
+        // 找到就将i-node加载到hash缓存中
+        // 无法找到就返回false：todo 更精细点做就是返回一个错误对象，里面写明错误码和错误信息
+        return inode.getIsDeleted() == 1;
+    }
+
+    public Inode getInode(long inodeNumber) {
+        return getInodeInternal(inodeNumber);
+    }
+
+    private Inode getInodeInternal(long inodeNumber) {
         // 先在inode缓存中查找
         Inode inode = inodeCache.get(inodeNumber);
         if (inode != null) {
-            return inode.getIsDeleted() == 1;
+            return inode;
         }
 
         // 通过i-node number查找i-node
@@ -81,15 +92,28 @@ public class InodeManager implements Manager {
             byte[] inodeBytes = caSystem.getDiskHelper().read(i, inodeSize);
             inode = ByteArraySerializer.deserialize(Inode.class, inodeBytes);
             if (inode == null) {
-                return false;
+                return null;
             }
 
             if (inode.getNumber() == inodeNumber && inode.getIsDeleted() == 1) {
-                return true;
+                return inode;
             }
         }
-        // 找到就将i-node加载到hash缓存中
-        // 无法找到就返回false：todo 更精细点做就是返回一个错误对象，里面写明错误码和错误信息
-        return false;
+
+        return null;
+    }
+
+    public void updateOnWrite(Inode inode, int length, int start) {
+        inode.setLength(inode.getLength() + length);
+        inode.setFirstBlockNumber(start);
+        inodeCache.set(inode);
+        flushInode(inode);
+    }
+
+    private void flushInode(Inode inode) {
+        int inodeByteLength = FixedByteSerializer.getSerializeLength(Inode.class);
+        long writeOffset = inode.getNumber() * inodeByteLength + dataStartOffset;
+        byte[] inodeBytes = ByteArraySerializer.serialize(inode, Inode.class);
+        caSystem.getDiskHelper().write(inodeBytes, writeOffset);
     }
 }

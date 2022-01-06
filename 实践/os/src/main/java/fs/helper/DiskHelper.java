@@ -54,6 +54,13 @@ public class DiskHelper {
         mappedByteBuffer.force();
     }
 
+    public void write(byte[] bytes, int offset, int length) {
+        ByteBuffer buffer = mappedByteBuffer.slice();
+        buffer.position(offset);
+        buffer.put(bytes, offset, length);
+        mappedByteBuffer.force();
+    }
+
     public void shutdown() {
         try {
             if (fileChannel != null) {
