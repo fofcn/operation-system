@@ -52,7 +52,18 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
         this.evictCount = (evictThreshold * capacity) / 100;
 
         this.evictThreadPool.execute(() -> {
-            evictCacheNode();
+            while (evictStart) {
+                try {
+                    resetCountDown.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                evictCacheNode(false);
+                resetCountDown.reset();
+            }
+
+
         });
     }
 
@@ -67,11 +78,14 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
         CacheNode<K, V> cacheNode = new CacheNode<>(k, v);
 
         // 判断当前缓存节点数量是否大于等于capacity
-        // 如果大于
+        // 如果大于等于capacity，那么现在就需要踢出链表中最后一个节点
+        if (curSize.get() >= capacity) {
+            evictCacheNode(true);
+        }
 
         // 根据key获取Value链表
-        LinkedListNode listNode = table.get(k);
         synchronized (k) {
+            LinkedListNode listNode = table.get(k);
             // 如果链表为空，那么新建链表
             if (listNode == null) {
                 listNode = new LinkedListNode();
@@ -119,13 +133,15 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
         CacheNode<K, V> foundNode = null;
 
         // 根据key获取value链表
-        LinkedListNode listNode = table.get(k);
         synchronized (k) {
-            for (CacheNode<K, V> cacheNode : listNode) {
-                if (cacheNode.key.equals(k)) {
-                    val = cacheNode.value;
-                    foundNode = cacheNode;
-                    break;
+            LinkedListNode listNode = table.get(k);
+            if (listNode != null) {
+                for (CacheNode<K, V> cacheNode : listNode) {
+                    if (cacheNode.key.equals(k)) {
+                        val = cacheNode.value;
+                        foundNode = cacheNode;
+                        break;
+                    }
                 }
             }
 
@@ -148,33 +164,34 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
 
     }
 
-    private void evictCacheNode() {
-        while (evictStart) {
-            try {
-                resetCountDown.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            int delCount = 0;
-            StdOut.println("start evict nodes");
-            for (Map.Entry<K, LinkedListNode> entry : table.entrySet()) {
-                synchronized (entry.getKey()) {
-                    LinkedListNode listNode = entry.getValue();
-                    if (listNode == null) {
-                        continue;
-                    }
-
-                    int delSize = listNode.getSize() / 2;
-                    while (delSize-- != 0) {
-                        listNode.removeLast();
-                    }
-                    delCount += delSize;
+    private void evictCacheNode(boolean onlyOne) {
+        boolean done = false;
+        int delCount = 0;
+        StdOut.println("start evict nodes");
+        for (Map.Entry<K, LinkedListNode> entry : table.entrySet()) {
+            synchronized (entry.getKey()) {
+                LinkedListNode listNode = entry.getValue();
+                if (listNode == null) {
+                    continue;
                 }
+
+                int delSize = listNode.getSize() / 2;
+                while (delSize-- != 0) {
+                    listNode.removeLast();
+                    if (onlyOne) {
+                        done = true;
+                        break;
+                    }
+                }
+
+                delCount += delSize;
             }
-            StdOut.println("end evict nodes, total deleted nodes: " + delCount);
-            resetCountDown.reset();
+
+            if (done) {
+                break;
+            }
         }
+        StdOut.println("end evict nodes, total deleted nodes: " + delCount);
 
     }
 
@@ -287,7 +304,7 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
             first = node;
             first.prev = null;
             if (oldFirst == null) {
-                first = last;
+                last = first;
             } else {
                 first.next = oldFirst;
                 oldFirst.prev = first;
@@ -356,12 +373,14 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
 
             @Override
             public boolean hasNext() {
-                return cur.next != null;
+                return cur != null;
             }
 
             @Override
             public CacheNode<K, V> next() {
-                return cur;
+                CacheNode<K, V> tmp = cur;
+                cur = cur.next;
+                return tmp;
             }
         }
     }

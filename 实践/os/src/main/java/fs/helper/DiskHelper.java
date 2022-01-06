@@ -57,7 +57,7 @@ public class DiskHelper {
     public void write(byte[] bytes, int offset, int length) {
         ByteBuffer buffer = mappedByteBuffer.slice();
         buffer.position(offset);
-        buffer.put(bytes, offset, length);
+        buffer.put(bytes, 0, length);
         mappedByteBuffer.force();
     }
 

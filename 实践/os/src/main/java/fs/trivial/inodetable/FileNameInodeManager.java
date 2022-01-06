@@ -30,9 +30,11 @@ public class FileNameInodeManager implements Manager {
 
     private final long fileInodeSize = 8 + 4 + SuperBlockManager.MAX_PATH;
 
+    private final FilenameInodeCache filenameInodeCache;
+
     public FileNameInodeManager(final CaSystem caSystem) {
         this.caSystem = caSystem;
-
+        this.filenameInodeCache = new FilenameInodeCache();
     }
 
     @Override
@@ -41,6 +43,7 @@ public class FileNameInodeManager implements Manager {
         this.dataPages = caSystem.getSuperBlockManager().getFileInodePages();
         this.dataStartOffset = dataStartPage * caSystem.getBlockSize();
         this.dataEndOffset = dataStartOffset + dataPages * caSystem.getBlockSize();
+        this.filenameInodeCache.initialize();
         return true;
     }
 
@@ -55,18 +58,30 @@ public class FileNameInodeManager implements Manager {
     }
 
     public long getInodeNumber(String name) {
-        if (caSystem.getSuperBlockManager().getInodeAmount() == 0L) {
+        long inodeAmount = caSystem.getSuperBlockManager().getInodeAmount();
+        if (inodeAmount == 0L) {
             return -1L;
+        }
+
+        FileNameInode filenameInode = filenameInodeCache.get(name);
+        if (filenameInode != null) {
+            filenameInode.getInodeNumber();
         }
 
         long offset = dataStartPage * caSystem.getBlockSize();
         long end = offset + dataPages * caSystem.getBlockSize();
-
-        for (long i = offset; i <= end;  i = i + fileInodeSize) {
+        for (long i = offset, j = 0; i <= end && j <  inodeAmount;  i = i + fileInodeSize, j++) {
             FileNameInode nameInode = readFileNameInode(i);
             if (name.equals(nameInode.getName())) {
-                return nameInode.getInodeNumber();
+                filenameInode = nameInode;
+                break;
             }
+        }
+
+        if (filenameInode != null) {
+            // 写入缓存
+            filenameInodeCache.set(filenameInode);
+            return filenameInode.getInodeNumber();
         }
 
         return -1L;

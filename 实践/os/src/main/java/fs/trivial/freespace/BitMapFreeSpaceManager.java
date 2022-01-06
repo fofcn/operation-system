@@ -17,9 +17,9 @@ public class BitMapFreeSpaceManager implements FreeSpaceManager, Manager {
 
     private final CaSystem caSystem;
 
-    private final long startOffset;
+    private long startOffset;
 
-    private final long endOffset;
+    private long endOffset;
 
     private final long blockSize;
 
@@ -29,12 +29,13 @@ public class BitMapFreeSpaceManager implements FreeSpaceManager, Manager {
         this.caSystem = caSystem;
         this.diskHelper = caSystem.getDiskHelper();
         this.blockSize = caSystem.getBlockSize();
-        this.startOffset = caSystem.getSuperBlockManager().getFreeSpaceStartPage() * caSystem.getBlockSize();
-        this.endOffset = startOffset + caSystem.getBlockSize() * caSystem.getSuperBlockManager().getFreeSpacePages();
+
     }
 
     @Override
     public boolean initialize() {
+        this.startOffset = caSystem.getSuperBlockManager().getFreeSpaceStartPage() * caSystem.getBlockSize();
+        this.endOffset = startOffset + caSystem.getBlockSize() * caSystem.getSuperBlockManager().getFreeSpacePages();
         // 这里一次性加载完是有性能和资源问题的
         // 因为空闲区可能会比较大，完全加载到内存可能导致速度慢
         // 可能导致内存资源不够，尤其是在硬盘容量特别大的时候
@@ -103,7 +104,7 @@ public class BitMapFreeSpaceManager implements FreeSpaceManager, Manager {
 
         GetFreeSpaceIndexes result = new GetFreeSpaceIndexes();
         result.setStart(startIndex);
-        result.setEnd(endIndex);
+        result.setEnd(endIndex == 0 ? 1 : endIndex);
 
         return found ? result : null;
     }

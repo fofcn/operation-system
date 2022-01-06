@@ -15,6 +15,7 @@ import util.StdOut;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.List;
 
 /**
@@ -95,7 +96,7 @@ public class CaSystem implements FileSystem {
         inodeManager.initialize();
         freeSpaceManager.initialize();
         fileNameInodeManager.initialize();
-
+        dataManager.initialize();
         bootBlockManager.hasInitialized();
     }
 
@@ -145,7 +146,26 @@ public class CaSystem implements FileSystem {
         return inodeNumber;
     }
 
-    public long writeFile(long inodeNumber, byte[] content) throws FileNotFoundException {
+    public long openFile(String name) throws FileNotFoundException {
+        if (name == null || name.equals("")) {
+            throw new IllegalArgumentException("file name.");
+        }
+
+        long inodeNumber = fileNameInodeManager.getInodeNumber(name);
+        if (inodeNumber == -1L) {
+            throw new FileNotFoundException(name);
+        }
+
+        // 将i-node信息读取缓存中
+        boolean isDeleted = inodeManager.isInodeDeleted(inodeNumber);
+        if (isDeleted) {
+            throw new FileNotFoundException(name);
+        }
+
+        return inodeNumber;
+    }
+
+    public long writeFile(long inodeNumber, byte[] content) throws FileNotFoundException, FileAlreadyExistsException {
         if (inodeNumber < 0 || content == null) {
             throw new IllegalArgumentException();
         }
@@ -157,6 +177,10 @@ public class CaSystem implements FileSystem {
         Inode inode = inodeManager.getInode(inodeNumber);
         if (inode == null) {
             throw new FileNotFoundException("未找到文件");
+        }
+
+        if (inode.getLength() > 0) {
+            throw new FileAlreadyExistsException("文件已存在");
         }
 
         // 根据内容长度计算块的数量
@@ -176,6 +200,19 @@ public class CaSystem implements FileSystem {
         inodeManager.updateOnWrite(inode, content.length, result.getStart());
 
         return 0L;
+    }
+
+    public byte[] readFile(long inodeNumber) throws FileNotFoundException {
+        if (inodeNumber < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        Inode inode = inodeManager.getInode(inodeNumber);
+        if (inode == null) {
+            throw new FileNotFoundException("未找到文件");
+        }
+
+        return dataManager.readData(inode);
     }
 
     public List<String> getFileList() {
@@ -205,4 +242,6 @@ public class CaSystem implements FileSystem {
     public SuperBlockManager getSuperBlockManager() {
         return superBlockManager;
     }
+
+
 }

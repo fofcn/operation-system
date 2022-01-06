@@ -1,6 +1,8 @@
 package fs.trivial;
 
 import fs.helper.DiskHelper;
+import fs.trivial.inode.Inode;
+import fs.trivial.superblock.SuperBlockManager;
 
 /**
  * 数据管理
@@ -12,21 +14,24 @@ public class DataManager implements Manager {
 
     private final DiskHelper diskHelper;
 
-    private final long startOffset;
-
     private final long blockSize;
 
-    private final long dataStartPage;
+    private long startOffset;
+
+    private long dataStartPage;
+
+    private final SuperBlockManager superBlockManager;
 
     public DataManager(CaSystem caSystem) {
         this.blockSize = caSystem.getBlockSize();
         this.diskHelper = caSystem.getDiskHelper();
-        this.dataStartPage = caSystem.getSuperBlockManager().getDataStartPage();
-        this.startOffset = caSystem.getSuperBlockManager().getDataStartPage() * blockSize;
+        this.superBlockManager = caSystem.getSuperBlockManager();
     }
 
     @Override
     public boolean initialize() {
+        this.dataStartPage = superBlockManager.getDataStartPage();
+        this.startOffset = superBlockManager.getDataStartPage() * blockSize;
         return true;
     }
 
@@ -42,6 +47,11 @@ public class DataManager implements Manager {
 
     public void writeData(byte[] content, int start, int end) {
         long writeStartOffset = startOffset + start * blockSize;
-        diskHelper.write(content, (int) writeStartOffset, end - start);
+        diskHelper.write(content, (int) writeStartOffset, content.length);
+    }
+
+    public byte[] readData(Inode inode) {
+        long readStartOffset = startOffset + inode.getFirstBlockNumber() * blockSize;
+        return diskHelper.read(readStartOffset, (int) inode.getLength());
     }
 }

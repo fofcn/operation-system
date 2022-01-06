@@ -58,10 +58,8 @@ public class InodeManager implements Manager {
 
         // 将inode加入到缓存中
         inodeCache.set(inode);
-        return 0L;
+        return index;
     }
-
-
 
     public int getIndexNodeSize() {
         Inode iNode = new Inode();
@@ -71,9 +69,12 @@ public class InodeManager implements Manager {
 
     public boolean isInodeDeleted(long inodeNumber) {
         Inode inode = getInodeInternal(inodeNumber);
+        if (inode != null) {
+            return inode.getIsDeleted() == 1;
+        }
         // 找到就将i-node加载到hash缓存中
         // 无法找到就返回false：todo 更精细点做就是返回一个错误对象，里面写明错误码和错误信息
-        return inode.getIsDeleted() == 1;
+        return false;
     }
 
     public Inode getInode(long inodeNumber) {
@@ -95,7 +96,8 @@ public class InodeManager implements Manager {
                 return null;
             }
 
-            if (inode.getNumber() == inodeNumber && inode.getIsDeleted() == 1) {
+            if (inode.getNumber() == inodeNumber) {
+                inodeCache.set(inode);
                 return inode;
             }
         }
