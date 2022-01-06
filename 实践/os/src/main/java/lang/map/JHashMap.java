@@ -11,13 +11,13 @@ import java.util.HashMap;
  * @author jiquanxi
  * @date 2021/12/24
  */
-public class LinearProbingHashMap<Key, Value> implements Map<Key, Value> {
+public class JHashMap<Key, Value> implements Map<Key, Value> {
     private int size;
     private final int mod;
     private Key[] keys;
     private Value[] values;
 
-    public LinearProbingHashMap(int mod) {
+    public JHashMap(int mod) {
         this.mod = mod;
         this.keys = (Key[]) new Object[mod];
         this.values = (Value[]) new Object[mod];

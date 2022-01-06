@@ -24,7 +24,7 @@ public class FifoAlg<T extends Comparable<T>> implements ReplacementAlg<T> {
     }
 
     @Override
-    public void cache(T obj) {
+    public void set(T obj) {
         if (deque.size() >= maxCapacity) {
             deque.removeLast();
         }

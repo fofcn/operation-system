@@ -21,16 +21,19 @@ public class InodeManager implements Manager {
 
     private final int inodeSize;
 
+    private final InodeCache inodeCache;
+
     public InodeManager(CaSystem caSystem) {
         this.caSystem = caSystem;
         this.inodeSize = getIndexNodeSize();
+        this.inodeCache = new InodeCache();
     }
 
     @Override
     public boolean initialize() {
         this.dataStartOffset = caSystem.getSuperBlockManager().getInodeStartPage() * caSystem.getBlockSize();
         this.dataEndOffset = dataStartOffset + caSystem.getSuperBlockManager().getInodePages() * caSystem.getBlockSize();
-
+        this.inodeCache.initialize();
         // 根据super block中的i-node数量加载i-node
         return true;
     }
@@ -54,20 +57,29 @@ public class InodeManager implements Manager {
         long writeOffset = index * inodeByteLength + dataStartOffset;
         byte[] inodeBytes = ByteArraySerializer.serialize(inode, Inode.class);
         caSystem.getDiskHelper().write(inodeBytes, writeOffset);
+
+        // 将inode加入到缓存中
+        inodeCache.set(inode);
         return 0L;
     }
 
-    public int getIndexNodeSize() {
+    public static int getIndexNodeSize() {
         Inode iNode = new Inode();
         byte[] iNodeBytes = ByteArraySerializer.serialize(iNode, Inode.class);
         return iNodeBytes.length;
     }
 
     public boolean isInodeDeleted(long inodeNumber) {
+        // 先在inode缓存中查找
+        Inode inode = inodeCache.get(inodeNumber);
+        if (inode != null) {
+            return inode.getIsDeleted() == 1;
+        }
+
         // 通过i-node number查找i-node
         for (long i = dataStartOffset, j = 0; i < dataEndOffset && j < caSystem.getSuperBlockManager().getInodeAmount(); i = i + inodeSize, j++) {
             byte[] inodeBytes = caSystem.getDiskHelper().read(i, inodeSize);
-            Inode inode = ByteArraySerializer.deserialize(Inode.class, inodeBytes);
+            inode = ByteArraySerializer.deserialize(Inode.class, inodeBytes);
             if (inode == null) {
                 return false;
             }

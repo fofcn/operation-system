@@ -20,7 +20,7 @@ package memory.repalcement;
  * @author jiquanxi
  * @date 2021/12/24
  */
-public class NruAlg {
+public class NruAlg<T extends Comparable<T>> implements ReplacementAlg<T>{
     /**
      * R位表示读
      */
@@ -32,4 +32,13 @@ public class NruAlg {
     private volatile int mBit;
 
 
+    @Override
+    public void set(T obj) {
+
+    }
+
+    @Override
+    public T get(T key) {
+        return null;
+    }
 }

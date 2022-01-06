@@ -9,14 +9,16 @@ package memory.repalcement;
 public interface ReplacementAlg<T> {
 
     /**
+     * 缓存一个对象
      * Cache a object.
      * @param obj
      */
-    void cache(T obj);
+    void set(T obj);
 
     /**
+     * 从缓存中获取一个对象
      * Get a cached object.
-     * @param key
+     * @param key key关键字
      * @return
      */
     T get(T key);

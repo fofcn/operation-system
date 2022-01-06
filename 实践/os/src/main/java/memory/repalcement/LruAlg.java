@@ -22,7 +22,7 @@ public class LruAlg<T extends Comparable<T>> implements ReplacementAlg<T> {
     }
 
     @Override
-    public void cache(T obj) {
+    public void set(T obj) {
         if (obj == null) {
             throw new IllegalArgumentException("obj");
         }
