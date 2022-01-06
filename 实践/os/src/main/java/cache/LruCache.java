@@ -40,7 +40,9 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
 
     private final CountDownLatchReset resetCountDown = new CountDownLatchReset(1);
 
-    private final ConcurrentHashMap<K, LinkedListNode> table;
+    private final ConcurrentHashMap<K, CacheNode<K, V>> table;
+
+    private final LinkedListNode linkedListNode;
 
     private final int capacity;
 
@@ -50,6 +52,7 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
         this.capacity = capacity;
         this.table = new ConcurrentHashMap<>(capacity);
         this.evictCount = (evictThreshold * capacity) / 100;
+        this.linkedListNode = new LinkedListNode();
 
         this.evictThreadPool.execute(() -> {
             while (evictStart) {
@@ -59,6 +62,7 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
                     e.printStackTrace();
                 }
 
+                StdOut.println("start time thread to evict nodes");
                 evictCacheNode(false);
                 resetCountDown.reset();
             }
@@ -84,40 +88,24 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
         }
 
         // 根据key获取Value链表
-        synchronized (k) {
-            LinkedListNode listNode = table.get(k);
-            // 如果链表为空，那么新建链表
-            if (listNode == null) {
-                listNode = new LinkedListNode();
-                table.put(k, listNode);
-            }
+        CacheNode<K, V> existsNode = table.get(k);
+        table.put(k, cacheNode);
 
-            // 如果链表不为空，那么获取当前链表
-            // 将缓存内容加入到链表头
-            // 查找链表中的是否已经存在该key
-            CacheNode<K, V> exists = null;
-            for (CacheNode<K, V> node : listNode) {
-                // 已经存在则更新value值
-                if (node.key.equals(k)) {
-                    exists = node;
-                    break;
-                }
-            }
-
-            if (exists != null) {
-                exists.value = v;
-                listNode.moveToFirst(exists);
+        synchronized (linkedListNode) {
+            if (existsNode != null) {
+                existsNode.value = v;
+                linkedListNode.moveToFirst(existsNode);
             } else {
-                listNode.addFirst(cacheNode);
+                linkedListNode.addFirst(cacheNode);
+                // 当前缓存容量加1
+                curSize.incrementAndGet();
             }
         }
-
-        // 当前缓存容量加1
-        curSize.incrementAndGet();
 
         // 查看当前缓存大小,如果缓存大小超过了剔除的阈值，那么就执行剔除策略
         if (curSize.get() >= evictCount) {
             // 启动线程执行剔除
+            StdOut.println("signal to evict nodes");
             resetCountDown.countDown();
         }
     }
@@ -130,28 +118,15 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
         }
 
         V val = null;
-        CacheNode<K, V> foundNode = null;
-
-        // 根据key获取value链表
-        synchronized (k) {
-            LinkedListNode listNode = table.get(k);
-            if (listNode != null) {
-                for (CacheNode<K, V> cacheNode : listNode) {
-                    if (cacheNode.key.equals(k)) {
-                        val = cacheNode.value;
-                        foundNode = cacheNode;
-                        break;
-                    }
-                }
-            }
-
-            // 将获取到的value移动到链表头
-            if (foundNode != null) {
-                listNode.moveToFirst(foundNode);
+        CacheNode<K, V> foundNode = table.get(k);
+        if (foundNode != null) {
+            synchronized (linkedListNode) {
+                linkedListNode.moveToFirst(foundNode);
             }
         }
 
-        return val;
+
+        return foundNode.value;
     }
 
     @Override
@@ -165,32 +140,25 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
     }
 
     private void evictCacheNode(boolean onlyOne) {
-        boolean done = false;
-        int delCount = 0;
         StdOut.println("start evict nodes");
-        for (Map.Entry<K, LinkedListNode> entry : table.entrySet()) {
-            synchronized (entry.getKey()) {
-                LinkedListNode listNode = entry.getValue();
-                if (listNode == null) {
-                    continue;
-                }
-
-                int delSize = listNode.getSize() / 2;
-                while (delSize-- != 0) {
-                    listNode.removeLast();
-                    if (onlyOne) {
-                        done = true;
-                        break;
-                    }
-                }
-
-                delCount += delSize;
+        int delCount = 0;
+        synchronized (linkedListNode) {
+            int shouldDelCount = linkedListNode.getSize() - capacity / 2;
+            if (shouldDelCount <= 0) {
+                return;
             }
 
-            if (done) {
-                break;
+            if (onlyOne) {
+                linkedListNode.removeLast();
+                delCount++;
+            } else {
+                while (shouldDelCount-- >= 0) {
+                    linkedListNode.removeLast();
+                    delCount++;
+                }
             }
         }
+
         StdOut.println("end evict nodes, total deleted nodes: " + delCount);
 
     }
