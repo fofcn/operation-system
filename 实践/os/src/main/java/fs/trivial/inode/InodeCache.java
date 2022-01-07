@@ -1,9 +1,7 @@
 package fs.trivial.inode;
 
 import cache.Cache;
-import cache.LruCache;
-import lang.map.JHashMap;
-import lang.map.Map;
+import cache.lru.LruCache;
 
 /**
  * i-node节点缓存

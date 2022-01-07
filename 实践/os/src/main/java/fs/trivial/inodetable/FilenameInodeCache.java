@@ -1,8 +1,7 @@
 package fs.trivial.inodetable;
 
 import cache.Cache;
-import cache.LruCache;
-import fs.trivial.inode.Inode;
+import cache.lru.LruCache;
 
 /**
  * file name 与 i-node节点缓存
