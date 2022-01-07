@@ -1,6 +1,5 @@
 package cache.lru;
 
-import cache.Cache;
 import util.StdOut;
 
 import java.util.Iterator;
@@ -8,7 +7,7 @@ import java.util.Iterator;
 /**
  * 节点value列表
  */
-class LinkedListNode<K, V> implements Iterable<CacheNode<K, V>> {
+class LinkedList<K, V> implements Iterable<CacheNode<K, V>> {
 
     private int size;
 
@@ -16,7 +15,7 @@ class LinkedListNode<K, V> implements Iterable<CacheNode<K, V>> {
 
     private CacheNode<K, V> last;
 
-    public LinkedListNode() {
+    public LinkedList() {
         this.first = null;
         this.last = null;
         this.size = 0;

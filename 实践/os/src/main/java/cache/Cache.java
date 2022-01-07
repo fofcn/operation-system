@@ -17,7 +17,7 @@ public interface Cache<K, V> {
 
     /**
      * 从缓存中根据key获取一个值
-     * @param k
+     * @param k 缓存key值
      * @return
      */
     V get(K k);

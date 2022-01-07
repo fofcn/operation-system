@@ -108,7 +108,7 @@ public class LruCacheTest {
 
     @Test
     public void testEvictParallelSetAndGet() throws InterruptedException {
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
         CountDownLatch countDownLatch = new CountDownLatch(capacity * 2);
         IntStream.range(0, capacity * 2).<Runnable>mapToObj(key -> () -> {
             lruCache.set(key, UUID.randomUUID().toString());

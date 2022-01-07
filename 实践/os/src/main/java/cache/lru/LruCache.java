@@ -15,17 +15,17 @@ public class LruCache<K, V> implements Cache<K, V> {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private final ConcurrentHashMap<K, CacheNode<K, V>> table;
+    private final ConcurrentHashMap<K, CacheNode<K, V>> indexTable;
 
-    private final LinkedListNode linkedListNode;
+    private final LinkedList linkedListNode;
 
     private final int capacity;
 
 
     public LruCache(int capacity) {
         this.capacity = capacity;
-        this.table = new ConcurrentHashMap<>(capacity);
-        this.linkedListNode = new LinkedListNode();
+        this.indexTable = new ConcurrentHashMap<>(capacity);
+        this.linkedListNode = new LinkedList();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class LruCache<K, V> implements Cache<K, V> {
         lock.writeLock().lock();
         try {
             // 根据key获取Value链表
-            CacheNode<K, V> cachedNode = table.get(k);
+            CacheNode<K, V> cachedNode = indexTable.get(k);
             // 节点存在则更新节点的值
             if (cachedNode != null) {
                 adjustNode(cachedNode);
@@ -72,7 +72,7 @@ public class LruCache<K, V> implements Cache<K, V> {
         CacheNode<K, V> foundNode = null;
         lock.readLock().lock();
         try {
-            foundNode = table.get(k);
+            foundNode = indexTable.get(k);
         } finally {
             lock.readLock().unlock();
         }
@@ -93,14 +93,14 @@ public class LruCache<K, V> implements Cache<K, V> {
 
     @Override
     public int size() {
-        return table.size();
+        return indexTable.size();
     }
 
     @Override
     public void clear() {
         lock.writeLock().lock();
         try {
-            table.clear();
+            indexTable.clear();
             linkedListNode.clear();
         } finally {
             lock.writeLock().unlock();
@@ -127,7 +127,7 @@ public class LruCache<K, V> implements Cache<K, V> {
     private CacheNode<K, V> removeLast() {
         CacheNode<K, V> node = linkedListNode.removeLast();
         if (node != null) {
-            table.remove(node.getKey());
+            indexTable.remove(node.getKey());
             CacheNode<K, V> last = linkedListNode.getLast();
             if (last != null) {
                 updateIndex(last);
@@ -138,7 +138,7 @@ public class LruCache<K, V> implements Cache<K, V> {
 
     private void updateIndex(CacheNode<K, V> node) {
         if (node != null) {
-            table.put(node.getKey(), node);
+            indexTable.put(node.getKey(), node);
         }
     }
 
