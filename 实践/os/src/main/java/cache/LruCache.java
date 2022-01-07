@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * LRU算法cache
@@ -23,6 +24,8 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
     private final int evictThreshold = 75;
 
     private final AtomicInteger curSize = new AtomicInteger(0);
+
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final ThreadPoolExecutor evictThreadPool = new ThreadPoolExecutor(1, 1,
             60L* 1000,
@@ -87,11 +90,12 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
             evictCacheNode(true);
         }
 
-        // 根据key获取Value链表
-        CacheNode<K, V> existsNode = table.get(k);
-        table.put(k, cacheNode);
+        lock.writeLock().lock();
+        try {
+            // 根据key获取Value链表
+            CacheNode<K, V> existsNode = table.get(k);
+            table.put(k, cacheNode);
 
-        synchronized (linkedListNode) {
             if (existsNode != null) {
                 existsNode.value = v;
                 linkedListNode.moveToFirst(existsNode);
@@ -100,6 +104,8 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
                 // 当前缓存容量加1
                 curSize.incrementAndGet();
             }
+        } finally {
+            lock.writeLock().unlock();
         }
 
         // 查看当前缓存大小,如果缓存大小超过了剔除的阈值，那么就执行剔除策略
@@ -118,15 +124,19 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
         }
 
         V val = null;
-        CacheNode<K, V> foundNode = table.get(k);
-        if (foundNode != null) {
-            synchronized (linkedListNode) {
+        lock.readLock().lock();
+        try {
+            CacheNode<K, V> foundNode = table.get(k);
+            if (foundNode != null) {
                 linkedListNode.moveToFirst(foundNode);
+                val = foundNode.value;
             }
+        } finally {
+            lock.readLock().unlock();
         }
 
 
-        return foundNode.value;
+        return val;
     }
 
     @Override
@@ -142,21 +152,27 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
     private void evictCacheNode(boolean onlyOne) {
         StdOut.println("start evict nodes");
         int delCount = 0;
-        synchronized (linkedListNode) {
+
+        lock.writeLock().lock();
+        try {
             int shouldDelCount = linkedListNode.getSize() - capacity / 2;
             if (shouldDelCount <= 0) {
                 return;
             }
-
+            CacheNode<K, V> node;
             if (onlyOne) {
-                linkedListNode.removeLast();
+                node = linkedListNode.removeLast();
+                table.remove(node.key);
                 delCount++;
             } else {
                 while (shouldDelCount-- >= 0) {
-                    linkedListNode.removeLast();
+                    node = linkedListNode.removeLast();
+                    table.remove(node.key);
                     delCount++;
                 }
             }
+        } finally {
+            lock.writeLock().unlock();
         }
 
         StdOut.println("end evict nodes, total deleted nodes: " + delCount);
@@ -303,24 +319,29 @@ public class LruCache<K extends Comparable, V> implements Cache<K, V> {
 
         }
 
-        public void removeLast() {
+        public CacheNode<K, V> removeLast() {
             // 情况1：没有节点，空链表
             if (first == null) {
                 throw new NoSuchElementException("");
             }
 
+            CacheNode<K, V> node = null;
             // 情况2：只有一个节点
             if (first.next == null) {
+                node = first;
                 first = null;
                 last = null;
             } else {
                 // 情况3： 有两个节点或更多
+                node = last;
                 CacheNode<K, V> prev = last.prev;
                 last.prev = prev;
                 prev.next = null;
             }
 
             size--;
+
+            return node;
         }
 
         public int getSize() {
