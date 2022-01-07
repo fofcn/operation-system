@@ -40,9 +40,9 @@ public class ByteArraySerializer {
                 Class<?> fieldType = nameValuePair.getField().getType();
                 if (fieldType.getCanonicalName().equals("java.lang.String")) {
                 } else if (fieldType.getCanonicalName().equals("int")) {
-                    length += 4;
+                    length += Integer.SIZE / 8;
                 } else if (fieldType.getCanonicalName().equals("long")) {
-                    length += 8;
+                    length += Long.SIZE / 8;
                 } else {
                     throw new OperationNotSupportedException("not support this type: " + fieldType.getCanonicalName());
                 }

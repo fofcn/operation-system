@@ -1,7 +1,5 @@
 package cache.lru;
 
-import util.StdOut;
-
 import java.util.Iterator;
 
 /**
@@ -42,9 +40,6 @@ class LinkedList<K, V> implements Iterable<CacheNode<K, V>> {
         }
 
         CacheNode<K, V> prev = node.getPrev();
-        if (prev == null) {
-            StdOut.println();
-        }
         CacheNode<K, V> next = node.getNext();
 
         node.setNext(first);
