@@ -1,6 +1,8 @@
 package cache.lru;
 
 import cache.Cache;
+import cache.CacheNode;
+import cache.LinkedList;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -52,7 +54,7 @@ public class LruCache<K, V> implements Cache<K, V> {
 
                 CacheNode<K, V> first = linkedListNode.getFirst();
                 // 节点不存在则新建缓存节点，放入链表和链表索引中
-                cachedNode = new CacheNode<>(k, v);
+                cachedNode = new LruCacheNode<>(k, v);
                 linkedListNode.addFirst(cachedNode);
                 updateIndex(first);
                 updateIndex(cachedNode);

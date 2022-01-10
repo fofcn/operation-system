@@ -1,4 +1,4 @@
-package cache.lru;
+package cache;
 
 /**
  * 缓存节点
@@ -6,15 +6,14 @@ package cache.lru;
  * @author jiquanxi
  * @date 2022/01/07
  */
-class CacheNode<K, V> {
-    private K key;
+public class CacheNode<K, V> {
+    protected K key;
 
-    private V value;
+    protected V value;
 
     private CacheNode<K, V> prev;
 
     private CacheNode<K, V> next;
-
 
     public CacheNode(K key, V value) {
         this.key = key;
@@ -52,4 +51,5 @@ class CacheNode<K, V> {
     public void setNext(CacheNode<K, V> next) {
         this.next = next;
     }
+
 }
