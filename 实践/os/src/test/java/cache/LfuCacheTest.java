@@ -4,6 +4,7 @@ import cache.lfu.LfuCache;
 import cache.lfu.LfuCacheNode;
 import cache.lru.LruCache;
 import fs.trivial.SerializerTest;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,6 +88,11 @@ public class LfuCacheTest {
         }
     }
 
+    @After
+    public void after() {
+        lfuCache.clear();
+    }
+
     @Test
     public void testLeetCodeTestCase() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         System.out.println("null");
@@ -98,13 +104,10 @@ public class LfuCacheTest {
             Object ret = invokeMethod(funcName, key, arguments);
 
             if ("set".equals(funcName)) {
-//                System.out.println(funcName + "->[" + arguments[0] + ", " + arguments[1] + "] ->" + ret);
-                System.out.println(ret);
+                System.out.println(funcName + "->[" + arguments[0] + ", " + arguments[1] + "] ->" + ret);
             } else {
-//                System.out.println(funcName + "->[" + arguments[0] + "] ->" + ret);
-                System.out.println(ret);
+                System.out.println(funcName + "->[" + arguments[0] + "] ->" + ret);
             }
-
         }
     }
 

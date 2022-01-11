@@ -99,7 +99,13 @@ public class LfuCache<K, V> implements Cache<K, V> {
         lock.lock();
         try {
             indexTable.clear();
-            // todo 清空链表
+            for (Map.Entry<Integer, LfuCacheNodeList<K, V>> entry : freqMap.entrySet()) {
+                LfuCacheNodeList list = entry.getValue();
+                CacheNode node = null;
+                do {
+                    node = list.removeFirst();
+                } while (node != null);
+            }
             freqMap.clear();
         } finally {
             lock.unlock();

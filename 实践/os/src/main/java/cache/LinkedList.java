@@ -109,6 +109,10 @@ public class LinkedList<K, V> implements Iterable<CacheNode<K, V>> {
      * @return 删除前的最后一个节点
      */
     public CacheNode<K, V> removeFirst() {
+        if (first == null) {
+            return null;
+        }
+
         CacheNode<K, V> tmpFirst = first;
         CacheNode<K, V> next = tmpFirst.getNext();
         first = next;
