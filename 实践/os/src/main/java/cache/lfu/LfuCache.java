@@ -140,14 +140,12 @@ public class LfuCache<K, V> implements Cache<K, V> {
             list.setPrev(null);
             list.setNext(null);
             freqMap.remove(frequency);
+            // 更新first指针
+            // 更新条件： 如果要删除的list==first，则更新first为next
             if (list == first) {
                 first = nextList;
             }
         }
-
-        // 更新first指针
-        // 更新条件： 如果要删除的list==first，则更新first为next
-        // 如果
 
         indexTable.put(k, node);
     }
