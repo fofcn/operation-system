@@ -61,10 +61,10 @@ public class LinkedList<K, V> implements Iterable<CacheNode<K, V>> {
      */
     public CacheNode<K, V> remove(CacheNode<K, V> node) {
         // 分情况删除
-        // 情况1：前驱节点不存在 node.prev == null
-        // 情况2：前驱节点存在   node.prev ！= null
-        // 情况3：后继节点不存在 node.next == null
-        // 情况4：后继节点存在
+        // 情况1：前驱节点不存在 node.prev == null 为头节点，需要处理头节点
+        // 情况2：前驱节点存在   node.prev ！= null 可能为尾节点，可能为中间节点
+        // 情况3：后继节点不存在 node.next == null 确定为尾节点
+        // 情况4：后继节点存在 node.next != null 可能为头结点，可能为中间节点
         CacheNode<K, V> prev = node.getPrev();
         CacheNode<K, V> next = node.getNext();
         if (prev == null) {

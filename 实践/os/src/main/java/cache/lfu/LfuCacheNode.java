@@ -28,4 +28,13 @@ public class LfuCacheNode<K, V> extends CacheNode<K, V> {
     public void setFrequency(int frequency) {
         this.frequency = frequency;
     }
+
+    @Override
+    public String toString() {
+        return "LfuCacheNode{" +
+                "frequency=" + frequency +
+                ", key=" + key +
+                ", value=" + value +
+                '}';
+    }
 }

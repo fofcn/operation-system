@@ -32,4 +32,5 @@ public interface Cache<K, V> {
      * 缓存全部清空
      */
     void clear();
+
 }
