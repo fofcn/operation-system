@@ -2,7 +2,6 @@ package cache.lfu;
 
 import cache.Cache;
 import cache.CacheNode;
-import util.StdOut;
 
 import java.util.HashMap;
 import java.util.Map;
