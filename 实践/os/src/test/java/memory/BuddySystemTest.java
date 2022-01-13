@@ -24,7 +24,7 @@ public class BuddySystemTest {
     public void testInitialize() {
         buddySystem.initialize();
         Assert.assertEquals(MAX_MEM_SIZE, buddySystem.getSize());
-        Assert.assertEquals(MAX_MEM_SIZE, buddySystem.getIdleSize());
+        Assert.assertEquals(0, buddySystem.getIdleSize());
     }
 
     @Test
