@@ -42,6 +42,7 @@ public class BuddySystem {
 
     public BuddySystem(int size) {
         this.size = size;
+        this.idleSize.set(size);
     }
 
     /**
@@ -65,11 +66,14 @@ public class BuddySystem {
      * @param expectSize 待分配的内存大小
      */
     public MemoryBlock alloc(int expectSize) {
+        // 参数检查
         if (expectSize > size) {
             throw new IllegalArgumentException("Sorry, I don't have enough memory.");
         }
+
         MemoryBlock best = null;
 
+        // 开始查找最适合的块
         if (lock.tryLock()) {
             try {
                 // 查看当前空闲块链表，找到小且大于等于申请大小的空闲块
