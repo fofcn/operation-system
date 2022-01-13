@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author jiquanxi
  * @date 2022/01/13
  */
-public class BinarySearchTree<Key extends Comparable<Key>, Value> {
+public class BinarySearchTree<Key extends Comparable<Key>, Value> implements Tree<Key, Value> {
 
     private final AtomicInteger size = new AtomicInteger(0);
 
@@ -22,6 +22,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
      * 获取树节点大小
      * @return 节点大小
      */
+    @Override
     public int size() {
         return size.get();
     }
@@ -30,10 +31,12 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
      * 树是否为空
      * @return true 为空， false不为空
      */
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
 
+    @Override
     public boolean contains(Key key) {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -42,6 +45,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
         return get(key) != null;
     }
 
+    @Override
     public Value get(Key key) {
         // 参数检查
         if (key == null) {
@@ -53,6 +57,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
         return node == null ? null : node.value;
     }
 
+    @Override
     public void put(Key key, Value value) {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -66,6 +71,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
         putInternal(key, value);
     }
 
+    @Override
     public void delete(Key key) {
         if (key == null) {
             throw new IllegalArgumentException();
