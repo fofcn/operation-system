@@ -53,16 +53,6 @@ public class LfuCacheNodeList<K, V> {
         return list.getSize();
     }
 
-    public <V, K> LfuCacheNodeList promote(LfuCacheNodeList prevList, LfuCacheNodeList nextList, LfuCacheNode<K,V> node) {
-        if (nextList == null) {
-            nextList = new LfuCacheNodeList(node.getFrequency());
-            nextList.setPrev(prevList);
-        }
-
-        nextList.addLast(node);
-        return nextList;
-    }
-
     public <V, K> void remove(LfuCacheNode<K,V> node) {
         list.remove(node);
     }

@@ -5,6 +5,7 @@ import cache.CacheNode;
 import cache.LinkedList;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -15,7 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class LruCache<K, V> implements Cache<K, V> {
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReentrantLock lock = new ReentrantLock();
 
     private final ConcurrentHashMap<K, CacheNode<K, V>> indexTable;
 
@@ -39,7 +40,7 @@ public class LruCache<K, V> implements Cache<K, V> {
 
         // 判断当前缓存节点数量是否大于等于capacity
         // 如果大于等于capacity，那么现在就需要踢出链表中最后一个节点
-        lock.writeLock().lock();
+        lock.lock();
         try {
             // 根据key获取Value链表
             CacheNode<K, V> cachedNode = indexTable.get(k);
@@ -60,7 +61,7 @@ public class LruCache<K, V> implements Cache<K, V> {
                 updateIndex(cachedNode);
             }
         } finally {
-            lock.writeLock().unlock();
+            lock.unlock();
         }
     }
 
@@ -72,19 +73,19 @@ public class LruCache<K, V> implements Cache<K, V> {
         }
 
         CacheNode<K, V> foundNode = null;
-        lock.readLock().lock();
+        lock.lock();
         try {
             foundNode = indexTable.get(k);
         } finally {
-            lock.readLock().unlock();
+            lock.unlock();
         }
 
         if (foundNode != null) {
-            lock.writeLock().lock();
+            lock.lock();
             try {
                 adjustNode(foundNode);
             } finally {
-                lock.writeLock().unlock();
+                lock.unlock();
             }
 
             return foundNode.getValue();
@@ -100,17 +101,17 @@ public class LruCache<K, V> implements Cache<K, V> {
 
     @Override
     public void clear() {
-        lock.writeLock().lock();
+        lock.lock();
         try {
             indexTable.clear();
             linkedListNode.clear();
         } finally {
-            lock.writeLock().unlock();
+            lock.unlock();
         }
     }
 
     private void evictCacheNode(boolean onlyOne) {
-        lock.writeLock().lock();
+        lock.lock();
         try {
             while (linkedListNode.getSize() >= capacity) {
                 CacheNode<K, V> removedNode = removeLast();
@@ -122,7 +123,7 @@ public class LruCache<K, V> implements Cache<K, V> {
             }
 
         } finally {
-            lock.writeLock().unlock();
+            lock.unlock();
         }
     }
 
