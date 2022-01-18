@@ -10,7 +10,7 @@ import cache.CacheNode;
  */
 public class LfuCacheNode<K, V> extends CacheNode<K, V> {
 
-    private int frequency;
+    private volatile int frequency;
 
     public LfuCacheNode(K key, V value) {
         this(key, value, 1);

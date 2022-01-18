@@ -14,11 +14,11 @@ public class SkipLists<Key extends Comparable<Key>, Value> {
 
     private final int probability = 50;
 
-    private volatile Header<Key, Value> header;
+    private volatile HeaderIndex<Key, Value> header;
 
 
     public SkipLists() {
-        this.header = new Header(new Node(null, null, null), null, null, 1);
+        this.header = new HeaderIndex(new Node(null, null, null), null, null, 1);
     }
 
     /**
@@ -81,48 +81,100 @@ public class SkipLists<Key extends Comparable<Key>, Value> {
         }
 
         // 是否要为数据节点添加索引层
-        int rnd = ThreadLocalRandom.current().nextInt();
-        // test highest and lowest bits
-        if (rnd > probability) {
+        int level = randomLevel();
 
+        // 需要加层
+        if (level > header.level) {
+            int oldLevel = header.level;
+            int newLevel = header.level + 1;
+
+            // 为新节点创建索引节点
+            Index<Key, Value>[] newNodeIndexes = createNewNodeIndex(newNode, newLevel);
+            // 为头结点增量补充索引节点,并将头结点的索引节点指向新节点的索引节点
+            header = incrHeaderIdxes(newLevel, newNodeIndexes);
+
+            // 根据老层更新新节点的数据
+            updateOldIdxes(oldLevel, newLevel);
+        }
+    }
+
+    /**
+     * 更新老层的索引
+     * @param key 关键字
+     * @param oldLevel 老层数
+     * @param newLevel 新层数
+     */
+    private void updateOldIdxes(Key key, int oldLevel, int newLevel) {
+        int nl = newLevel;
+        Index<Key, Value> idx = header;
+        Index<Key, Value> right = idx.right;
+        do {
+            // 从左向右查找更新点
+            if (right != null) {
+                int cmp = key.compareTo((Key) right.node.key);
+                if (cmp > 0) {
+                    idx = right;
+                    right = right.right;
+                    continue;
+                }
+            }
+
+            // 找到更新点
+            if (oldLevel == nl) {
+
+            }
+
+            nl--;
+            if (nl >= oldLevel) {
+
+            }
+
+            idx = idx.down;
+            right = idx.right;
+        } while(true);
+    }
+
+    private int randomLevel() {
+        int level = 1;
+        int rnd = ThreadLocalRandom.current().nextInt(1, 101);
+        while (rnd > probability && level <= 32) {
             // 根据随机数来生成索引层数
-            int level = 1, max;
-            while (((rnd >>>= 1) & 1) != 0) {
-                ++level;
-            }
+            ++level;
+            rnd = ThreadLocalRandom.current().nextInt(1, 101);
+        }
+        return level;
+    }
 
-            Index<Key,Value> idx = null;
-            Header<Key,Value> h = header;
-            // 如果生成的索引层数小于等于当前的最高的索引层数，那么就为新建节点新建所有层的索引
-            if (level <= (max = h.level)) {
-                for (int i = 1; i <= level; ++i) {
-                    idx = new Index<>(newNode, idx, null);
-                }
-            } else {
-                // 添加新的索引层，最新的索引层索引需要重建
-                level = max + 1;
-
-                // 为新添加的新节点新建索引节点
-                // 新节点索引节点有多少层就需要新建多少个索引节点
-                Index<Key, Value>[] idxs = new Index[level + 1];
-                for (int i = 1; i <= level; i++) {
-                    idxs[i] = idx = new Index<>(newNode, idx, null);
-                }
-
-                // 为头索引增量添加层
-                Header<Key, Value> newHeader = header;
-                int oldLevel = header.level;
-                for (int j = oldLevel + 1; j <= level; j++) {
-                    newHeader = new Header<>(header.node, newHeader, idxs[j], j);
-                }
-
-                // 设置新的头
-                header = newHeader;
-                // 索引
-                idx = idxs[level = oldLevel];
-            }
+    /**
+     * 为头结点补充索引层级
+     * @param newLevel 新层数
+     * @param newNodeIdxes 新节点索引数组
+     * @return 新的头结点
+     */
+    private HeaderIndex<Key, Value> incrHeaderIdxes(int newLevel, Index<Key, Value>[] newNodeIdxes) {
+        HeaderIndex<Key, Value> newHeader = header;
+        for (int i = newHeader.level + 1; i <= newLevel; i++) {
+            newHeader = new HeaderIndex<>(newHeader.node, newHeader, newNodeIdxes[i], i);
         }
 
+        return newHeader;
+    }
+
+    /**
+     * 为新节点创建索引节点，并建立向下的索引关系
+     * @param newNode 新节点
+     * @param newLevel 层数
+     * @return 新节点的索引节点
+     */
+    private Index<Key,Value>[] createNewNodeIndex(Node<Key,Value> newNode, int newLevel) {
+        Index<Key,Value>[] newNodeIdxes = new Index[newLevel];
+        Index<Key,Value> newIndex = null;
+        for (int i = 1; i <= newLevel; i++) {
+            newIndex = new Index<>(newNode, newIndex, null);
+            newNodeIdxes[i] = newIndex;
+        }
+
+        return newNodeIdxes;
     }
 
     public void delete(Key key) {
@@ -214,10 +266,10 @@ public class SkipLists<Key extends Comparable<Key>, Value> {
     /**
      * 头
      */
-    static class Header<K,V> extends Index<K,V> {
+    static class HeaderIndex<K,V> extends Index<K,V> {
         private final int level;
 
-        public Header(Node node, Index down, Index right, int level) {
+        public HeaderIndex(Node node, Index down, Index right, int level) {
             super(node, right, down);
             this.level = level;
         }

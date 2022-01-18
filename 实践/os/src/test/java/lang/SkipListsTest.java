@@ -5,6 +5,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.ConcurrentSkipListMap;
+
 /**
  * 跳表测试
  *
@@ -29,5 +31,14 @@ public class SkipListsTest {
 
         Integer nullRet = skipList.get(2);
         Assert.assertNull(nullRet);
+    }
+
+    @Test
+    public void testConccurentSkipListMap() {
+        ConcurrentSkipListMap<Integer, Integer> map = new ConcurrentSkipListMap<>();
+        for (int i = 0;; i++) {
+            map.put(1, 1);
+        }
+
     }
 }

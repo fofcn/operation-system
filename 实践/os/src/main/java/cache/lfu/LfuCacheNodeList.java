@@ -13,11 +13,11 @@ public class LfuCacheNodeList<K, V> {
 
     private final int frequency;
 
-    private LinkedList list;
+    private volatile LinkedList list;
 
-    private LfuCacheNodeList prev;
+    private volatile LfuCacheNodeList prev;
 
-    private LfuCacheNodeList next;
+    private volatile LfuCacheNodeList next;
 
     public LfuCacheNodeList(int frequency) {
         this.frequency = frequency;

@@ -7,13 +7,13 @@ package cache;
  * @date 2022/01/07
  */
 public class CacheNode<K, V> {
-    protected K key;
+    protected volatile K key;
 
-    protected V value;
+    protected volatile V value;
 
-    private CacheNode<K, V> prev;
+    private volatile CacheNode<K, V> prev;
 
-    private CacheNode<K, V> next;
+    private volatile CacheNode<K, V> next;
 
     public CacheNode(K key, V value) {
         this.key = key;
