@@ -29,22 +29,31 @@ public class SkipLists<Key extends Comparable<Key>, Value> {
      * @return 存在则返回对应的value，不存在则返回null
      */
     public Value get(Key key) {
+        // 参数检查
         if (key == null) {
             throw new IllegalArgumentException();
         }
 
+        // 找到key对应的前驱节点
         Node<Key, Value> predecessor = findPredecessor(key);
+        // 从前驱节点开始遍历查找key对应的节点
         for (Node<Key, Value> next = predecessor.next;;) {
             if (next == null) {
                 break;
             }
 
+            // key与节点的Key比较
+            // 如果相等就找到了直接返回值
+            // 如果key大于节点的key，继续向后查找
+            // 如果key小于节点的key，那么没找到，退出循环
             int cmp = key.compareTo(next.key);
             if (cmp == 0) {
                 return next.value;
+            } else if (cmp > 0) {
+                next = next.next;
+            } else {
+                break;
             }
-
-            next = next.next;
         }
 
         return null;
@@ -79,6 +88,7 @@ public class SkipLists<Key extends Comparable<Key>, Value> {
                 }
             }
 
+            // 新建节点并更改前驱节点的下一个节点为新节点
             newNode = new Node<>(key, value, next);
             b.next = newNode;
             break;
@@ -148,8 +158,11 @@ public class SkipLists<Key extends Comparable<Key>, Value> {
             break;
         }
 
+        // 通过查找前驱索引节点删除可能需要删除的索引
+        // 删除索引的标记信息就是node.value==null
         findPredecessor(key);
         // 删除层
+        // 如果头索引的右侧索引已经被删除就减层
         while (header.right == null && header.level > 1) {
             header = (HeaderIndex<Key, Value>) header.down;
         }
@@ -230,7 +243,7 @@ public class SkipLists<Key extends Comparable<Key>, Value> {
         // 找到对应的层之后，我们开始向右继续查找前驱索引节点
         while (true) {
             if (right != null && right.node.value != null) {
-                int cmp = key.compareTo((Key) right.node.key);
+                int cmp = key.compareTo(right.node.key);
                 if (cmp > 0) {
                     precursorIdx = right;
                     right = right.right;
