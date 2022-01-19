@@ -4,8 +4,7 @@ import lang.skiplists.SkipLists;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.concurrent.ConcurrentSkipListMap;
+import util.StdOut;
 
 /**
  * 跳表测试
@@ -24,21 +23,28 @@ public class SkipListsTest {
 
     @Test
     public void testNormalPut() {
-        skipList.put(1, 1);
+        Integer[] input = {3, 6, 7, 9, 12, 19, 21, 25, 26};
 
-        int ret = skipList.get(1);
-        Assert.assertEquals(1, ret);
-
-        Integer nullRet = skipList.get(2);
-        Assert.assertNull(nullRet);
-    }
-
-    @Test
-    public void testConccurentSkipListMap() {
-        ConcurrentSkipListMap<Integer, Integer> map = new ConcurrentSkipListMap<>();
-        for (int i = 0;; i++) {
-            map.put(1, 1);
+        // 添加元素
+        for (int i = 0; i < input.length; i++) {
+            skipList.put(input[i], input[i]);
         }
 
+        // 获取所有元素
+        for (int i = 0; i < input.length; i++) {
+            Integer val = skipList.get(input[i]);
+            Assert.assertEquals(input[i], val);
+            StdOut.println("key=" + input[i] + ", value=" + val);
+        }
+
+        Integer val;
+        // 删除所有元素
+        for (int i = 0; i < input.length; i++) {
+            skipList.delete(input[i]);
+        }
+
+        // 删除完尝试获取一个元素
+        val = skipList.get(3);
+        Assert.assertNull(val);
     }
 }
