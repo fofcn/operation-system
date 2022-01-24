@@ -158,18 +158,31 @@ public class BTree<Key extends Comparable<Key>, Value>  {
         Entry t = new Entry(key, val, null);
 
         // external node
+        // 如果树的高度是0，那么只有根节点
         if (ht == 0) {
+            // 遍历根节点的数组，查找关键字的插入位置
             for (j = 0; j < h.m; j++) {
+                // 插入的关键字小于节点中的关键字，那么就找到了插入位置
                 if (less(key, h.children[j].key)) break;
             }
         }
 
+        // 如果树的高度大于0，有叶子节点
         // internal node
         else {
+            // 从根节点开始遍历
             for (j = 0; j < h.m; j++) {
+                // 如果遍历下标与节点的数组数据相同（表示已经达到了最大下标）或者搜索关键字小于数组中的关键字
+                // 那么表示没找到，继续向下层查找
                 if ((j+1 == h.m) || less(key, h.children[j+1].key)) {
+
+                    // 递归调用插入，此时节点换成了数组下标对应的下一个节点
                     Node u = insert(h.children[j++].next, key, val, ht-1);
+
+                    // 如果不需要分裂返回空
                     if (u == null) return null;
+
+                    //
                     t.key = u.children[0].key;
                     t.val = null;
                     t.next = u;
@@ -178,16 +191,23 @@ public class BTree<Key extends Comparable<Key>, Value>  {
             }
         }
 
+        // 将数组插入点的输入向后移动给新插入的数据腾出位置
         for (int i = h.m; i > j; i--)
             h.children[i] = h.children[i-1];
+        // 将数据插入到数组对应的下标中
         h.children[j] = t;
+        // 节点对应的计数加1
         h.m++;
+
+        // 如果节点中的计数小于最大数，那么不需要分裂
         if (h.m < M) return null;
+        // 否则需要分裂
         else         return split(h);
     }
 
     // split node in half
     private Node split(Node h) {
+        // 分裂将数组中的后半部分拷贝到新数组中
         Node t = new Node(M/2);
         h.m = M/2;
         for (int j = 0; j < M/2; j++)
