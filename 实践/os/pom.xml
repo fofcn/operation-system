@@ -22,6 +22,9 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <slf4j.version>1.7.16</slf4j.version>
+        <fastjson.version>1.2.3</fastjson.version>
+        <logback.version>1.2.3</logback.version>
     </properties>
 
   <dependencies>
@@ -33,6 +36,51 @@
           <version>4.12</version>
           <scope>test</scope>
       </dependency>
+
+      <!-- netty -->
+      <dependency>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-all</artifactId>
+          <version>4.0.36.Final</version>
+      </dependency>
+      <!-- netty -->
+
+      <!-- slf4j -->
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>${slf4j.version}</version>
+      </dependency>
+      <!-- slf4j -->
+
+      <!-- fastjson -->
+      <dependency>
+          <groupId>com.alibaba</groupId>
+          <artifactId>fastjson</artifactId>
+          <version>${fastjson.version}</version>
+      </dependency>
+      <!-- fastjson -->
+
+      <!-- logback -->
+      <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+          <version>${logback.version}</version>
+      </dependency>
+      <!-- logback -->
+
+      <!-- logstash-logback-encoder -->
+      <dependency>
+          <groupId>net.logstash.logback</groupId>
+          <artifactId>logstash-logback-encoder</artifactId>
+          <version>6.4</version>
+      </dependency>
+      <!-- logstash-logback-encoder -->
 
   </dependencies>
 </project>

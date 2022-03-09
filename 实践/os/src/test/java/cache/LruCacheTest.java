@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 /**
  * LRU缓存算法测试类
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/06
  */
 public class LruCacheTest {

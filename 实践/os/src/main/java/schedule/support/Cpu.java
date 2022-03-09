@@ -6,7 +6,7 @@ import util.StdOut;
 /**
  * CPU
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/31
  */
 public class Cpu {

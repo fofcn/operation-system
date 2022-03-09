@@ -3,7 +3,7 @@ package fs.trivial.freespace;
 /**
  * 获取数据空闲区索引
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/06
  */
 public class GetFreeSpaceIndexes {

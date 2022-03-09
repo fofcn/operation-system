@@ -3,7 +3,7 @@ package schedule;
 /**
  * 调度策略
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/31
  */
 public interface SchedulerPolicy {

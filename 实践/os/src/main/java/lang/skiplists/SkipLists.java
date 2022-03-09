@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * 跳跃表实现
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/14
  */
 public class SkipLists<Key extends Comparable<Key>, Value> {

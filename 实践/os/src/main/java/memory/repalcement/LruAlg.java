@@ -6,7 +6,7 @@ import java.util.Arrays;
  * Least recently used algorithm.
  * 最近最少使用算法
  * 算法思想： 选择最后一次访问时间距离当前时间最长的一页并置换
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/23
  */
 public class LruAlg<T extends Comparable<T>> implements ReplacementAlg<T> {

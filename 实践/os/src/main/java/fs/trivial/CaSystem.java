@@ -31,7 +31,7 @@ import java.util.List;
  * -------------------------------------------------------------------------------------------------------------------------------------------
  * | boot block | super block | root directory | i-node bit map | i-node | free space management| file&i-node bit map | file&i-node | data|
  * ------------------------------------------------------------------------------------------------------------------------------------------
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/27
  */
 public class CaSystem implements FileSystem {

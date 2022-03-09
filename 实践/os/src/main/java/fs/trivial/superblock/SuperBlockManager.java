@@ -7,7 +7,7 @@ import lang.serializer.ByteArraySerializer;
 /**
  * super block manager
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/29
  */
 public class SuperBlockManager implements Manager {

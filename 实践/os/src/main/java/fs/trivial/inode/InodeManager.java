@@ -8,7 +8,7 @@ import lang.serializer.ByteArraySerializer;
 /**
  * I-node manager of file system.
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/28
  */
 public class InodeManager implements Manager {

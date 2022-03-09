@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 二分搜索树
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/13
  */
 public class BinarySearchTree<Key extends Comparable<Key>, Value> implements Tree<Key, Value> {

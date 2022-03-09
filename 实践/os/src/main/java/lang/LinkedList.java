@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 /**
  * 双向链表
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/20
  */
 public class LinkedList<E> implements Iterable<E> {

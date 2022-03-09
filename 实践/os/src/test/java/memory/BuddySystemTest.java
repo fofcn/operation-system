@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * 伙伴系统测试
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/20
  */
 public class BuddySystemTest {

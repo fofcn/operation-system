@@ -7,7 +7,7 @@ import lang.BitMap;
 /**
  * i-node bit map manager
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/29
  */
 public class InodeBitMapManager implements Manager {

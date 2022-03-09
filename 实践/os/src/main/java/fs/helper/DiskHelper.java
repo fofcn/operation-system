@@ -10,7 +10,7 @@ import java.nio.channels.FileChannel;
 /**
  * A tool for alloc virtual disk.
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/27
  */
 public class DiskHelper {

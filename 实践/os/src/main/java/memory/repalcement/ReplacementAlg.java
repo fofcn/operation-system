@@ -3,7 +3,7 @@ package memory.repalcement;
 /**
  * Replacement algorithm 置换算法
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/23
  */
 public interface ReplacementAlg<T> {

@@ -11,7 +11,7 @@ import lang.Deque;
  * 1. 可能把最近经常使用的页面置换出去了，从而出现抖动的问题。
  * 例如：超市最先放到置物架的上售卖的产品一般都是家庭常用的，
  * 此时有新产品要上架，那么把家庭常用的产品下架将是一个错误的决定。
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/23
  */
 public class FifoAlg<T extends Comparable<T>> implements ReplacementAlg<T> {

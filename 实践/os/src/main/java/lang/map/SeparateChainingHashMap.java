@@ -3,7 +3,7 @@ package lang.map;
 /**
  * 分离链表实现HashMap
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/24
  */
 public class SeparateChainingHashMap<Key, Value> implements Map<Key, Value> {

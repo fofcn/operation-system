@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * leetcode代码实现
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/07
  */
 public class LRUCache {
@@ -162,7 +162,7 @@ public class LRUCache {
     /**
      * 缓存节点
      *
-     * @author jiquanxi
+     * @author errorfatal89@gmail.com
      * @date 2022/01/07
      */
     class CacheNode<K, V> {

@@ -6,7 +6,7 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 /**
  * 可重置信号量
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/07
  */
 public class CountDownLatchReset {

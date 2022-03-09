@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * leetcode lfu 缓存算法实现
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/11
  */
 public class LFUCache {

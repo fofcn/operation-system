@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * file name and inode map manager
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/29
  */
 public class FileNameInodeManager implements Manager {

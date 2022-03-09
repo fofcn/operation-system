@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 /**
  * 字节随机化长度
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/30
  */
 public interface FixedByteSerializer {

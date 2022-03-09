@@ -8,7 +8,7 @@ import java.util.HashMap;
  * 线性探查Map
  *
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/24
  */
 public class JHashMap<Key, Value> implements Map<Key, Value> {

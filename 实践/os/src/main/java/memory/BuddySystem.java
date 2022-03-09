@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 伙伴系统
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/20
  */
 public class BuddySystem {

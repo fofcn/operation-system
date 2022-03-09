@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * 二叉搜索树测试
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/13
  */
 public class BinarySearchTreeTest {

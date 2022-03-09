@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 重排序测试
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/12
  */
 public class ReorderingTest {

@@ -6,7 +6,7 @@ import org.junit.Test;
 /**
  * 数学工具测试类
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/20
  */
 public class StdMathTest {

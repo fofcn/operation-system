@@ -3,7 +3,7 @@ package fs.trivial;
 /**
  * manager interface
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/29
  */
 public interface Manager {

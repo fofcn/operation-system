@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 /**
  * BitMap implementation 位图实现
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/27
  */
 public class BitMap {

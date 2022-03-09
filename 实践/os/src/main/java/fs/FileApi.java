@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 /**
  * File operation application interface.
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/27
  */
 public interface FileApi {

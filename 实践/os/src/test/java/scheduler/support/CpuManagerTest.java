@@ -9,7 +9,7 @@ import util.StdOut;
 /**
  * CPU管理测试类
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/31
  */
 public class CpuManagerTest {

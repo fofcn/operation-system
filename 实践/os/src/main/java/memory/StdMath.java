@@ -3,7 +3,7 @@ package memory;
 /**
  * 数学函数
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/20
  */
 public class StdMath {

@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * LRU算法cache
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/06
  */
 public class LruCache<K, V> implements Cache<K, V> {

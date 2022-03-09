@@ -6,7 +6,7 @@ import cache.lru.LruCache;
 /**
  * i-node节点缓存
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/06
  */
 public class InodeCache {

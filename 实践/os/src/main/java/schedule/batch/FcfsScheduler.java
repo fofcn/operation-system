@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * First Come First Service Scheduling algorithm
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date
  */
 public class FcfsScheduler implements Scheduler {

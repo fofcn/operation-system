@@ -3,7 +3,7 @@ package memory;
 /**
  * 内存块
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/20
  */
 public class MemoryBlock {

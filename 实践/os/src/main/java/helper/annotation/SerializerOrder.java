@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * An order definition of fields in a class.
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/28
  */
 @Target(ElementType.FIELD)

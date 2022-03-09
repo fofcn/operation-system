@@ -3,7 +3,7 @@ package lang.tree;
 /**
  * B树实现
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/24
  */
 public class BTree<Key extends Comparable<Key>, Value> implements Tree<Key, Value> {

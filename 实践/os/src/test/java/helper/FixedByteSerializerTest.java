@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * 定长编码序列化测试
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/30
  */
 public class FixedByteSerializerTest {

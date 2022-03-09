@@ -17,7 +17,7 @@ package memory.repalcement;
  * 2   |    1       |     0      |  已引用，未修改
  * 3   |    1       |     1      |  已引用，已修改
  * -------------------------------
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/24
  */
 public class NruAlg<T extends Comparable<T>> implements ReplacementAlg<T>{

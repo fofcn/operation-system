@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 
 /**
  * 双端队列实现
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @param <Item>
  */
 public class Deque<Item> implements Iterable<Item> {

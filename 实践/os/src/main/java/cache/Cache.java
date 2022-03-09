@@ -3,7 +3,7 @@ package cache;
 /**
  * 缓存接口定义
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/06
  */
 public interface Cache<K, V> {

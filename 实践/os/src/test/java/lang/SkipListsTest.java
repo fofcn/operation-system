@@ -9,7 +9,7 @@ import util.StdOut;
 /**
  * 跳表测试
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/17
  */
 public class SkipListsTest {

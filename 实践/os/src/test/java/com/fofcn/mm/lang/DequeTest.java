@@ -9,7 +9,7 @@ import java.util.Iterator;
 /**
  * 双端队列测试
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/23
  */
 public class DequeTest {

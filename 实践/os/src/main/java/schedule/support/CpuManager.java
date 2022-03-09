@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Cpu 管理
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/31
  */
 public class CpuManager {

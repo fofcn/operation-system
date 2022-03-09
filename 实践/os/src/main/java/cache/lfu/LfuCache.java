@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 最不经常使用缓存算法
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/10
  */
 public class LfuCache<K, V> implements Cache<K, V> {

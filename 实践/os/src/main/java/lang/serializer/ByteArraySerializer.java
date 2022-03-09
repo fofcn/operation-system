@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * serialize a class to byte array
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/28
  */
 public class ByteArraySerializer {

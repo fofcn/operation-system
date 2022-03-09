@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" scanPeriod="60 seconds" debug="false">
+    <property name="LOG_HOME" value="/app/applog/auth-center"/>
+    <property name="appName" value="auth-center"/>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%magenta(%d{yyyy-MM-dd HH:mm:ss.SSS}) %yellow([%thread]) %highlight(%-5level) %cyan(%logger{50}) - %green(%msg%n)</pattern>
+        </layout>
+    </appender>
+
+    <appender name="appLogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}-%i-json.log</fileNamePattern>
+            <MaxHistory>60</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+            </providers>
+            <customFields>{"app": "${appName}" }</customFields>
+        </encoder>
+    </appender>
+
+    <logger name="distributed" level="info"/>
+    <root level="info">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="appLogAppender"/>
+    </root>
+<!--    <logger name="com.apache.ibatis" level="TRACE"/>-->
+<!--    <logger name="java.sql.Connection" level="DEBUG"/>-->
+<!--    <logger name="java.sql.Statement" level="DEBUG"/>-->
+<!--    <logger name="java.sql.PreparedStatement" level="DEBUG"/>-->
+    <!--    <logger name="org.springframework" level="debug" additivity="false"></logger>-->
+
+<!--    <springProfile name="prod,test">-->
+<!--        <root level="info">-->
+<!--            <appender-ref ref="stdout"/>-->
+<!--            <appender-ref ref="appLogAppender"/>-->
+<!--        </root>-->
+<!--    </springProfile>-->
+<!--    <springProfile name="dev">-->
+<!--        <root level="info">-->
+<!--            <appender-ref ref="stdout"/>-->
+<!--            <appender-ref ref="appLogAppender"/>-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+</configuration>

@@ -5,7 +5,7 @@ import cache.CacheNode;
 /**
  * LFU缓存节点
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/10
  */
 public class LfuCacheNode<K, V> extends CacheNode<K, V> {

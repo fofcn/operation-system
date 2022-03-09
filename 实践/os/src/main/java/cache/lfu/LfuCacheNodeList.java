@@ -6,7 +6,7 @@ import cache.LinkedList;
 /**
  *
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/11
  */
 public class LfuCacheNodeList<K, V> {

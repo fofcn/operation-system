@@ -5,7 +5,7 @@ import schedule.batch.FcfsScheduler;
 /**
  * 调度器工厂
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/31
  */
 public class SchedulerFactory {

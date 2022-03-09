@@ -3,7 +3,7 @@ package lang.tree;
 /**
  * 树操作接口定义
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/13
  */
 public interface Tree<Key extends Comparable<Key>, Value> {

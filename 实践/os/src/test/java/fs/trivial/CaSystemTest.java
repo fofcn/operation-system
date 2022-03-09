@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Test for CaSystem
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/28
  */
 public class CaSystemTest {
@@ -40,16 +40,16 @@ public class CaSystemTest {
 
     @Test
     public void testInitialize() {
-        caSystem.createFile("jiquanxi1.txt");
-        caSystem.createFile("jiquanxi2.txt");
-        caSystem.createFile("jiquanxi3.txt");
-        caSystem.createFile("jiquanxi4.txt");
-        caSystem.createFile("jiquanxi5.txt");
-        caSystem.createFile("jiquanxi6.txt");
-        caSystem.createFile("jiquanxi7.txt");
-        caSystem.createFile("jiquanxi8.txt");
-        caSystem.createFile("jiquanxi9.txt");
-        caSystem.createFile("jiquanxi10.txt");
+        caSystem.createFile("errorfatal89@gmail.com1.txt");
+        caSystem.createFile("errorfatal89@gmail.com2.txt");
+        caSystem.createFile("errorfatal89@gmail.com3.txt");
+        caSystem.createFile("errorfatal89@gmail.com4.txt");
+        caSystem.createFile("errorfatal89@gmail.com5.txt");
+        caSystem.createFile("errorfatal89@gmail.com6.txt");
+        caSystem.createFile("errorfatal89@gmail.com7.txt");
+        caSystem.createFile("errorfatal89@gmail.com8.txt");
+        caSystem.createFile("errorfatal89@gmail.com9.txt");
+        caSystem.createFile("errorfatal89@gmail.com10.txt");
     }
 
     @Test
@@ -60,7 +60,7 @@ public class CaSystemTest {
 
     @Test
     public void testOpenWriteReadFile() throws FileNotFoundException {
-        long inodeNumber = caSystem.openFile("jiquanxi8.txt");
+        long inodeNumber = caSystem.openFile("errorfatal89@gmail.com8.txt");
 
         String writeStr = "Hello world!";
         try {

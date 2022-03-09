@@ -3,7 +3,7 @@ package fs;
 /**
  * 文件属性定义 Definition of file attributes.
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/27
  */
 public interface FileAttribute {

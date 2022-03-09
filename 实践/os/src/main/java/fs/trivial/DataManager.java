@@ -7,7 +7,7 @@ import fs.trivial.superblock.SuperBlockManager;
 /**
  * 数据管理
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/06
  */
 public class DataManager implements Manager {

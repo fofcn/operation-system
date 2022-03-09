@@ -3,7 +3,7 @@ package fs;
 /**
  * Directory operation API
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/27
  */
 public interface DirectoryApi {

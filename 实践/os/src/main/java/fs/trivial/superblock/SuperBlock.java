@@ -6,7 +6,7 @@ import helper.annotation.SerializerOrder;
 /**
  * super block 超级块
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/28
  */
 public class SuperBlock implements FixedByteSerializer {

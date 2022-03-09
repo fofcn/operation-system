@@ -3,7 +3,7 @@ package util;
 /**
  * Standard output to console.
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/23
  */
 public class StdOut {

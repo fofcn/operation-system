@@ -6,7 +6,7 @@ import helper.annotation.SerializerOrder;
 /**
  * i-node
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/28
  */
 public class Inode implements FixedByteSerializer {

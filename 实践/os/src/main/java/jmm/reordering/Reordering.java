@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 重排序示例
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/12
  * @see <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html"></>
  */

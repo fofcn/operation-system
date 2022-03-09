@@ -3,7 +3,7 @@ package cache;
 /**
  * 缓存节点
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2022/01/07
  */
 public class CacheNode<K, V> {

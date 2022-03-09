@@ -3,7 +3,7 @@ package schedule.support;
 /**
  * 线程
  *
- * @author jiquanxi
+ * @author errorfatal89@gmail.com
  * @date 2021/12/31
  */
 public interface Task {
