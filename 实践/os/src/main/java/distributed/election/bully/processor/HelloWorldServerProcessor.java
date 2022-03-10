@@ -10,7 +10,7 @@ import distributed.network.util.NetworkUtil;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
- * TODO 文件说明
+ * Hello world
  *
  * @author errorfatal89@gmail.com
  * @date 2022/03/09

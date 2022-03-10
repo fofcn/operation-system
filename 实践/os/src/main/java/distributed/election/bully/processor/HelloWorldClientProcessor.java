@@ -1,15 +1,13 @@
 package distributed.election.bully.processor;
 
-import distributed.election.bully.command.HelloWorldRequestHeader;
 import distributed.election.bully.command.HelloWorldResponseHeader;
-import distributed.network.enums.RequestCode;
 import distributed.network.netty.NetworkCommand;
 import distributed.network.processor.NettyRequestProcessor;
 import distributed.network.util.NetworkUtil;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
- * TODO 文件说明
+ * Hello world
  *
  * @author errorfatal89@gmail.com
  * @date 2022/03/09

@@ -10,6 +10,7 @@ import distributed.network.processor.NettyRequestProcessor;
 import java.util.concurrent.ExecutorService;
 
 /**
+ * 网络客户端接口
  * @author errorfatal89@gmail.com
  */
 public interface NetworkClient {

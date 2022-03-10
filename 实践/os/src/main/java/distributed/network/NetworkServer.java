@@ -10,10 +10,20 @@ import io.netty.channel.Channel;
 
 import java.util.concurrent.ExecutorService;
 
+/**
+ * 网络服务器接口
+ * @author errorfatal89@gmail.com
+ */
 public interface NetworkServer {
 
+    /**
+     * 启动服务端服务
+     */
     void start();
 
+    /**
+     * 停止客户端服务
+     */
     void shutdown();
 
     /**
