@@ -68,6 +68,8 @@ public class DefaultFaultDetector implements FaultDetector {
                         log.warn("Coordinator fault, start election.");
                         nodeManager.broadcastElection();
                     }
+                } else {
+                    faultCounter.set(0);
                 }
             }
         }, 0, 5, TimeUnit.SECONDS);
