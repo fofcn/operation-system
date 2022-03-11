@@ -50,7 +50,8 @@ public class DefaultFaultDetector implements FaultDetector {
     public void start() {
         // 初始启动检查自己是否为
         coordinatorDetectorTimer.scheduleAtFixedRate(() -> {
-            log.info("当前角色： {}， 当前选举标识符: {}", nodeManager.getRole(), nodeManager.getIdentifier());
+            log.info("当前协调者标识符： {}， 当前角色： {}， 当前选举标识符: {}",
+                    nodeManager.getCoordinatorId(), nodeManager.getRole(), nodeManager.getIdentifier());
             // 检查自己的角色状态
             // 如果是非参与者，那么启动选举
             if (RoleEnum.NON_PARTICIPANT.getCode() == nodeManager.getRole()

@@ -199,6 +199,11 @@ public class DefaultNodeManager implements NodeManager {
         role = RoleEnum.FOLLOWER;
     }
 
+    @Override
+    public int getCoordinatorId() {
+        return coordinator == null ? 0xFFFFFFFF : coordinator.getIdentifier();
+    }
+
     private boolean directVictory() {
         boolean result = nodeConfigList.size() == 1 || greaterThanSelfList.size() == 0;
         Optional<BullyNodeConfig> max = nodeConfigList.stream().max(Comparator.comparingInt(BullyNodeConfig::getIdentifier));

@@ -65,4 +65,12 @@ public interface NodeManager {
      * @param identifier 选举标识符
      */
     void coordinatorVictory(int identifier);
+
+    /**
+     * 获取当前协调者标识符
+     * @return 当前协调者标识符
+     */
+    int getCoordinatorId();
+
+
 }
