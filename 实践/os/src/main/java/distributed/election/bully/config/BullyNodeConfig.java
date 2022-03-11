@@ -10,7 +10,7 @@ public class BullyNodeConfig {
     /**
      * 选举标识符
      */
-    private int identifier;
+    private volatile int identifier;
 
     /**
      * 节点IP

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 /**
  * leetcode lfu 缓存算法实现
@@ -351,6 +352,11 @@ public class LFUCache {
                 CacheNode<K, V> tmp = cur;
                 cur = cur.getNext();
                 return tmp;
+            }
+
+            @Override
+            public void remove() {
+
             }
         }
     }

@@ -39,11 +39,30 @@ public interface NodeManager {
     /**
      * 某个节点获胜
      * @param identifier 选举标识符
+     * @return true:成功，false:失败
      */
-    void victory(int identifier);
+    boolean victory(int identifier);
 
     /**
      * 广播选举
      */
     void broadcastElection();
+
+    /**
+     * 同步发送心跳消息
+     * @return true:成功，false:失败
+     */
+    boolean sendHeartBeat();
+
+    /**
+     * 获取自己的选举标识符
+     * @return 选举标识符
+     */
+    int getIdentifier();
+
+    /**
+     * 其他协调者当选
+     * @param identifier 选举标识符
+     */
+    void coordinatorVictory(int identifier);
 }

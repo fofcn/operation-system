@@ -2,9 +2,13 @@ package distributed.election.bully;
 
 import distributed.election.bully.command.HelloWorldRequestHeader;
 import distributed.election.bully.config.BullyConfig;
+import distributed.election.bully.fault.DefaultFaultDetector;
 import distributed.election.bully.fault.FaultDetector;
+import distributed.election.bully.node.DefaultNodeManager;
 import distributed.election.bully.node.NodeManager;
+import distributed.election.bully.processor.CoordinatorProcessor;
 import distributed.election.bully.processor.ElectionProcessor;
+import distributed.election.bully.processor.HeartBeatProcessor;
 import distributed.election.bully.processor.HelloWorldClientProcessor;
 import distributed.election.bully.processor.HelloWorldServerProcessor;
 import distributed.network.NetworkClient;
@@ -90,14 +94,25 @@ public class BullyElectionAlgorithm {
      */
     public BullyElectionAlgorithm(BullyConfig bullyConfig) {
         this.bullyConfig = bullyConfig;
+
     }
 
     /**
      * 初始化各个模块
      */
     public void init() {
+        this.networkServer = new NettyNetworkServer(bullyConfig.getNettyServerConfig());
+        this.networkClient = new NettyNetworkClient(bullyConfig.getNettyClientConfig());
         // 注册选举消息处理器
-        networkServer.registerProcessor(RequestCode.ELECTION.getCode(), new ElectionProcessor(), null,);
+        this.networkServer.registerProcessor(RequestCode.ELECTION.getCode(), new ElectionProcessor(this), null);
+        this.networkServer.registerProcessor(RequestCode.COORDINATOR.getCode(), new CoordinatorProcessor(this), null);
+        this.networkServer.registerProcessor(RequestCode.HEART_BEAT.getCode(), new HeartBeatProcessor(this), null);
+        this.nodeManager = new DefaultNodeManager(bullyConfig, networkClient);
+        this.nodeManager.initialize();
+        this.faultDetector = new DefaultFaultDetector(this);
+    }
+
+    public void start() {
         // 启动网络服务器
         networkServer.start();
         // 启动网络客户端
@@ -145,4 +160,26 @@ public class BullyElectionAlgorithm {
             e.printStackTrace();
         }
     }
+
+    public BullyConfig getBullyConfig() {
+        return bullyConfig;
+    }
+
+    public NetworkServer getNetworkServer() {
+        return networkServer;
+    }
+
+    public NetworkClient getNetworkClient() {
+        return networkClient;
+    }
+
+    public FaultDetector getFaultDetector() {
+        return faultDetector;
+    }
+
+    public NodeManager getNodeManager() {
+        return nodeManager;
+    }
+
+
 }

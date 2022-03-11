@@ -7,7 +7,8 @@ package distributed.network.enums;
 public enum RequestCode {
     ELECTION(1, "选举消息"),
     ELECTION_ACK(2, "选举消息应答"),
-    VICTORY(3, "获胜消息"),
+    COORDINATOR(3, "协调者消息"),
+    HEART_BEAT(4, "心跳消息")
     ;
 
     private int code;

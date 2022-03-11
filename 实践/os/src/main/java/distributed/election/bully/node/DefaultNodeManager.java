@@ -1,5 +1,7 @@
 package distributed.election.bully.node;
 
+import distributed.election.bully.command.CoordinatorRequestHeader;
+import distributed.election.bully.command.HeartBeatRequestHeader;
 import distributed.election.bully.command.election.ElectionRequestHeader;
 import distributed.election.bully.command.election.ElectionResponseHeader;
 import distributed.election.bully.config.BullyConfig;
@@ -12,12 +14,12 @@ import distributed.network.exception.NetworkSendRequestException;
 import distributed.network.exception.NetworkTimeoutException;
 import distributed.network.netty.NetworkCommand;
 import distributed.network.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -32,8 +34,8 @@ import java.util.stream.Collectors;
  * @author errorfatal89@gmail.com
  * @date 2022/03/10
  */
+@Slf4j
 public class DefaultNodeManager implements NodeManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger("nodeManager");
 
     /**
      * 配置文件
@@ -61,6 +63,11 @@ public class DefaultNodeManager implements NodeManager {
     private volatile BullyNodeConfig self;
 
     /**
+     * 协调者节点
+     */
+    private volatile BullyNodeConfig coordinator;
+
+    /**
      * 选举标识符大于自己的节点列表
      */
     private volatile List<BullyNodeConfig> greaterThanSelfList = new ArrayList<>(5);
@@ -78,26 +85,25 @@ public class DefaultNodeManager implements NodeManager {
         this.networkClient = networkClient;
     }
 
-
     @Override
     public boolean initialize() {
         // 解析配置文件
         String clusterNodes = bullyConfig.getClusterNodes();
         if (StringUtil.isEmpty(clusterNodes)) {
-            LOGGER.error("集群配置不正确，请检查是否符合格式：单节点：标识符+冒号 + 是否为自己(1：自己，0：不是自己) + 冒号 + IP+英文冒号+端口，");
+            log.error("集群配置不正确，请检查是否符合格式：单节点：标识符+冒号 + 是否为自己(1：自己，0：不是自己) + 冒号 + IP+英文冒号+端口，");
             return false;
         }
 
         String[] nodesArray = clusterNodes.split(";");
         for (int i = 0; i < nodesArray.length; i++) {
             if (StringUtil.isEmpty(nodesArray[i])) {
-                LOGGER.error("集群配置不正确，请检查是否符合格式：单节点：标识符+冒号 + 是否为自己(1：自己，0：不是自己) + 冒号 + IP+英文冒号+端口，");
+                log.error("集群配置不正确，请检查是否符合格式：单节点：标识符+冒号 + 是否为自己(1：自己，0：不是自己) + 冒号 + IP+英文冒号+端口，");
                 return false;
             }
 
             String[] nodeSections = nodesArray[i].split(":");
             if (nodeSections.length != 4) {
-                LOGGER.error("集群配置不正确，请检查是否符合格式：单节点：标识符+冒号 + 是否为自己(1：自己，0：不是自己) + 冒号 + IP+英文冒号+端口，");
+                log.error("集群配置不正确，请检查是否符合格式：单节点：标识符+冒号 + 是否为自己(1：自己，0：不是自己) + 冒号 + IP+英文冒号+端口，");
                 return false;
             }
 
@@ -109,13 +115,14 @@ public class DefaultNodeManager implements NodeManager {
             nodeConfig.setAddress(nodeSections[2] + ':' + nodeSections[3]);
             nodeConfigList.add(nodeConfig);
 
-            if (nodeSections[1].equals(1)) {
+            if (nodeSections[1].equals("1")) {
                 self = nodeConfig;
             }
         }
 
         nodeConfigList.addAll(nodeConfigList.stream().sorted(Comparator.comparingInt(BullyNodeConfig::getIdentifier)).collect(Collectors.toList()));
-        greaterThanSelfList.addAll(nodeConfigList.stream().filter(config -> {return config.getIdentifier() > self.getIdentifier();}).collect(Collectors.toList()));
+        greaterThanSelfList = nodeConfigList.stream().filter(config -> config.getIdentifier() > self.getIdentifier()).collect(Collectors.toList());
+
         return true;
     }
 
@@ -140,28 +147,110 @@ public class DefaultNodeManager implements NodeManager {
     }
 
     @Override
-    public void victory(int identifier) {
-
+    public boolean victory(int identifier) {
+        doVictory(identifier);
+        return true;
     }
 
     @Override
     public void broadcastElection() {
+        log.info("start election: identifier: {}, address: {}", self.getIdentifier(), self.getAddress());
         // 直接获胜
-        if (nodeConfigList.size() == 1 || greaterThanSelfList.size() == 0) {
-            doVictory();
+        if (directVictory()) {
+            doVictory(self.getIdentifier());
         } else {
             // 组播选举消息
             doElectionBroadcast();
         }
     }
 
-    private void doVictory() {
-        role = RoleEnum.COORDINATOR;
-        doVictoryBroadcast();
+    @Override
+    public boolean sendHeartBeat() {
+        HeartBeatRequestHeader reqHdr = new HeartBeatRequestHeader();
+        reqHdr.setIdentifier(self.getIdentifier());
+        NetworkCommand req = NetworkCommand.createRequestCommand(RequestCode.HEART_BEAT.getCode(), reqHdr);
+        try {
+            NetworkCommand response = networkClient.sendSync(coordinator.getAddress(), req, 30L * 1000);
+            return NetworkCommand.isResponseOK(response);
+        } catch (InterruptedException e) {
+            log.error("", e);
+        } catch (NetworkTimeoutException e) {
+            log.error("", e);
+        } catch (NetworkSendRequestException e) {
+            log.error("", e);
+        } catch (NetworkConnectException e) {
+            log.error("", e);
+        }
+
+        return false;
     }
 
-    private void doVictoryBroadcast() {
+    @Override
+    public int getIdentifier() {
+        return self.getIdentifier();
+    }
 
+    @Override
+    public void coordinatorVictory(int identifier) {
+        Optional<BullyNodeConfig> node = nodeConfigList.stream().filter(e -> e.getIdentifier() == identifier).findFirst();
+        if (node.isPresent()) {
+            coordinator = node.get();
+        }
+        role = RoleEnum.FOLLOWER;
+    }
+
+    private boolean directVictory() {
+        boolean result = nodeConfigList.size() == 1 || greaterThanSelfList.size() == 0;
+        Optional<BullyNodeConfig> max = nodeConfigList.stream().max(Comparator.comparingInt(BullyNodeConfig::getIdentifier));
+        return result || max.get().getIdentifier() == self.getIdentifier();
+    }
+
+    private void doVictory(int identifier) {
+        log.info("I'm coordinator, I'm {} and my address is {}", identifier, self.getAddress());
+        if (identifier == self.getIdentifier()) {
+            role = RoleEnum.COORDINATOR;
+            coordinator = self;
+        } else {
+            Optional<BullyNodeConfig> node = nodeConfigList.stream().filter(e -> e.getIdentifier() == identifier).findFirst();
+            if (node.isPresent()) {
+                coordinator = node.get();
+            }
+            role = RoleEnum.FOLLOWER;
+        }
+
+        doVictoryBroadcast(identifier);
+    }
+
+    private void doVictoryBroadcast(int excludeId) {
+        log.info("[Election victory]I will tell you, I'm {} and my address is {}", self.getIdentifier(), self.getAddress());
+        // 组播所有的客户端协调者消息
+        CountDownLatch countDownLatch = new CountDownLatch(nodeConfigList.size() - 1);
+        // 并发送协调者消息
+        nodeConfigList.stream().forEach(node -> {
+            // 组播不发送给自己
+            if (node.getIdentifier() == excludeId) {
+                return;
+            }
+
+            broadcastPoolExecutor.execute(() -> {
+                CoordinatorRequestHeader header = new CoordinatorRequestHeader();
+                header.setIdentifier(self.getIdentifier());
+                NetworkCommand coordinatorRequest = NetworkCommand.createRequestCommand(RequestCode.COORDINATOR.getCode(), header);
+                try {
+                    networkClient.sendOneway(node.getAddress(), coordinatorRequest, 30L * 1000, null);
+                } catch (InterruptedException e) {
+                    log.error("", e);
+                } catch (NetworkTimeoutException e) {
+                    log.error("", e);
+                } catch (NetworkSendRequestException e) {
+                    log.error("", e);
+                } catch (NetworkConnectException e) {
+                    log.error("", e);
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        });
     }
 
     private void doElectionBroadcast() {
@@ -179,13 +268,13 @@ public class DefaultNodeManager implements NodeManager {
                 try {
                     return networkClient.sendSync(node.getAddress(), electionReq, 30L * 1000);
                 } catch (InterruptedException e) {
-                    LOGGER.error("", e);
+                    log.error("", e);
                 } catch (NetworkTimeoutException e) {
-                    LOGGER.error("", e);
+                    log.error("", e);
                 } catch (NetworkSendRequestException e) {
-                    LOGGER.error("", e);
+                    log.error("", e);
                 } catch (NetworkConnectException e) {
-                    LOGGER.error("", e);
+                    log.error("", e);
                 } finally {
                     countDownLatch.countDown();
                 }
@@ -198,7 +287,7 @@ public class DefaultNodeManager implements NodeManager {
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            LOGGER.error("", e);
+            log.error("", e);
         }
 
         // 没有节点返回就直接获胜，组播协调者消息
@@ -211,18 +300,19 @@ public class DefaultNodeManager implements NodeManager {
                 } else {
                     ElectionResponseHeader respHdr = electResp.decodeHeader(ElectionResponseHeader.class);
                     // 暂时没用
-                    // 收到响应就知道有币自己选举标识符大的节点，就静静等协调者消息
+                    // 收到响应就知道有比自己选举标识符大的节点，就静静等协调者消息
                 }
             }
         } catch (InterruptedException e) {
-            LOGGER.error("", e);
+            log.error("", e);
         } catch (ExecutionException e) {
-            LOGGER.error("", e);
+            log.error("", e);
         }
 
         if (failCnt == futureList.size()) {
             // 自己获胜
-            doVictoryBroadcast();
+            log.info("给所有大于我的节点都发了消息，但是你们都没回复我，所以我现在是老大了。");
+            doVictoryBroadcast(self.getIdentifier());
         }
     }
 }

@@ -1,0 +1,8 @@
+
+clusterNodes: "1:0:127.0.0.1:60000;2:1:127.0.0.1:60001"
+listenPort: 60001
+serverWorkerThreads: 8
+serverSelectorThreads: 3
+serverChannelMaxIdleTimeSeconds: 120
+serverSocketSndBufSize: 65535
+serverSocketRcvBufSize: 65535

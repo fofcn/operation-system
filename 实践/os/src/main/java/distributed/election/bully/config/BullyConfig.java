@@ -1,11 +1,17 @@
 package distributed.election.bully.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import distributed.network.config.NettyClientConfig;
+import distributed.network.config.NettyServerConfig;
+import lombok.Data;
+
 /**
  * 霸道选举算法配置
  *
  * @author errorfatal89@gmail.com
  * @date 2022/03/09
  */
+@Data
 public class BullyConfig {
 
     /**
@@ -15,13 +21,10 @@ public class BullyConfig {
      *  例如：1:1:127.0.0.1:60000
      * 多节点：以逗号分割单节点，例如：1:1:127.0.0.1:60000;2:1:127.0.0.1:60001
      */
+    @JsonProperty("clusterNodes")
     private String clusterNodes;
 
-    public String getClusterNodes() {
-        return clusterNodes;
-    }
+    private NettyServerConfig nettyServerConfig;
 
-    public void setClusterNodes(String clusterNodes) {
-        this.clusterNodes = clusterNodes;
-    }
+    private NettyClientConfig nettyClientConfig;
 }
