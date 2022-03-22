@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fofcn</groupId>
     <artifactId>os</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -17,6 +17,19 @@
             </plugin>
         </plugins>
     </build>
+    <modules>
+        <module>futurefs</module>
+        <module>proto</module>
+        <module>futurefs-proto</module>
+        <module>future-store</module>
+        <module>futurefs-common</module>
+        <module>futurefs-bucket</module>
+        <module>futurefs-client</module>
+        <module>futurefs-netty</module>
+        <module>futurefs-grpc</module>
+        <module>futurefs-web</module>
+        <module>motuan-spider</module>
+    </modules>
     <name>buddy</name>
     <url>http://maven.apache.org</url>
 
@@ -109,5 +122,17 @@
         </dependency>
         <!-- lombok -->
 
+        <!-- -->
+        <dependency>
+            <artifactId>ratis-server</artifactId>
+            <groupId>org.apache.ratis</groupId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <artifactId>ratis-grpc</artifactId>
+            <groupId>org.apache.ratis</groupId>
+            <version>2.2.0</version>
+        </dependency>
+        <!-- -->
     </dependencies>
 </project>
