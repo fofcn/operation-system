@@ -30,6 +30,11 @@ public class FileBlock implements Codec<FileBlock> {
         Checksum crc64 = new CRC32();
         crc64.update(body, 0, body.length);
         int fileSize = 6 * Long.BYTES + body.length;
+        int padding = fileSize % 8;
+        if (padding != 0) {
+            fileSize += (Long.BYTES - padding);
+        }
+
         ByteBuffer buffer = ByteBuffer.allocate(fileSize);
         buffer.putLong(header.getHeaderMagic());
         buffer.putLong(header.getDeleteStatus());

@@ -149,7 +149,6 @@ public class BaseFile {
                 // 写入数据内容
                 fileChannel.write(buffer, pos);
                 pos = writePos.addAndGet(length);
-
                 doAfterAppend(pos, length);
             } catch (IOException e) {
                 log.error("write file error.", e);
