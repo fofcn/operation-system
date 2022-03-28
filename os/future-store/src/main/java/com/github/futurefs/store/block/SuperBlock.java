@@ -26,12 +26,12 @@ public class SuperBlock {
     /**
      * 文件数量
      */
-    private volatile AtomicLong amount;
+    private volatile AtomicLong amount = new AtomicLong(0L);
 
     /**
      * 写入偏移
      */
-    private volatile AtomicLong writePos;
+    private volatile AtomicLong writePos = new AtomicLong(0L);
 
     public SuperBlock(long magic, long version, long amount, long writePos) {
         this.magic = magic;

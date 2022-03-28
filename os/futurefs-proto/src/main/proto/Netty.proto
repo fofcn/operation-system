@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.netty";
+option java_outer_classname = "NettyProtos";
+option java_generate_equals_and_hash = true;
+package proto.netty;
+
+import "Bucket.proto";
+import "Store.proto";
+import "FileData.proto";
+import "Common.proto";
+
+message NettyRequest {
+  oneof Request {
+      proto.bucket.BucketRequest bucketRequest = 2;
+      proto.store.NodeRequest nodeRequest = 3;
+      proto.file.FileRequest fileRequest = 4;
+  }
+}
+
+message NettyReply {
+  oneof Reply {
+    proto.bucket.BucketReply bucketReply = 2;
+    proto.store.NodeReply nodeReply = 3;
+    proto.file.FileReply fileReply = 4;
+  }
+}

@@ -11,5 +11,10 @@
 
     <artifactId>futurefs-client</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.fofcn</groupId>
+            <artifactId>futurefs-netty</artifactId>
+        </dependency>
+    </dependencies>
 </project>

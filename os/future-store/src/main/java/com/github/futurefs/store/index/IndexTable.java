@@ -1,7 +1,7 @@
 package com.github.futurefs.store.index;
 
-import com.github.futurefs.common.R;
-import com.github.futurefs.common.RWrapper;
+import com.github.futurefs.netty.R;
+import com.github.futurefs.netty.RWrapper;
 import com.github.futurefs.store.common.AppendResult;
 import com.github.futurefs.store.common.BaseFile;
 import com.github.futurefs.store.common.constant.StoreConstant;

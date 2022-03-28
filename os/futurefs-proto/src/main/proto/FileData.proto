@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.netty";
+option java_outer_classname = "FileDataProtos";
+option java_generate_equals_and_hash = true;
+package proto.file;
+
+import "Common.proto";
+
+message FileRequest {
+  int64 length = 1;
+  bytes data = 2;
+}
+
+message FileReply {
+  int64 key = 1;
+}
+
+

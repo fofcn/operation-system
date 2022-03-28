@@ -45,6 +45,7 @@ public class IndexSuperBlock implements Codec<IndexSuperBlock> {
 
     @Override
     public IndexSuperBlock decode(ByteBuffer buffer) {
+        buffer.flip();
         magic = buffer.getLong();
         amount.set(buffer.getLong());
         writePos.set(buffer.getLong());

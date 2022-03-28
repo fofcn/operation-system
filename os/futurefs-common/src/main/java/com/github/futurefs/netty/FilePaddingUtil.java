@@ -1,4 +1,4 @@
-package com.github.futurefs.common;
+package com.github.futurefs.netty;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

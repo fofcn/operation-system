@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.netty";
+option java_outer_classname = "StoreProtos";
+option java_generate_equals_and_hash = true;
+package proto.store;
+
+import "Common.proto";
+
+message NodeRequest {
+  oneof NodeReq {
+      CreateNodeRequest create = 1;
+      GetNodeRequest get = 2;
+      DeleteNodeRequest delete = 3;
+      HeartBeatStoreRequest heartbeat = 4;
+      GetStoreNodeRequest getStoreNode = 5;
+  }
+}
+
+message NodeReply {
+  oneof NodeNettyReply {
+    CreateNodeReply create = 1;
+    GetNodeReply get = 2;
+    DeleteNodeReply delete = 3;
+    HeartBeatStoreReply heartbeat = 4;
+    GetStoreNodeReply getStoreNode = 5;
+  }
+}
+
+/**
+ * 创建node请求
+ */
+message CreateNodeRequest {
+  string name = 1;
+  string bucket = 2;
+  string pNode = 3;
+}
+
+message CreateNodeReply {
+  string name = 1;
+  string bucket = 2;
+  string pNode = 3;
+}
+
+/**
+ * 获取node请求
+ */
+message GetNodeRequest {
+  string path = 1;
+  string name = 2;
+}
+
+message GetNodeReply {
+  string path = 1;
+  string name = 2;
+}
+
+/**
+ * 删除node请求
+ */
+message DeleteNodeRequest {
+  string path = 1;
+  string name = 2;
+}
+
+message DeleteNodeReply {
+  string path = 1;
+  string name = 2;
+}
+
+/**
+ * 心跳请求
+ */
+message HeartBeatStoreRequest {
+  int32 type = 1; // 1：注册 2：去注册请求
+  string address = 3;
+  string bucket = 4;
+  string path = 5;
+  int64 totalSpace = 6;
+  int64 usedSpace = 7;
+  int64 availableSpace = 8;
+  int32 writable = 9; // 是否可写？1：可写，0：不可写
+}
+
+message HeartBeatStoreReply {
+  string id = 2;
+}
+
+/**
+ * 获取节点下可用存储节点请求
+ */
+message GetStoreNodeRequest {
+  string bucket = 1;
+}
+
+/**
+ * 获取节点下可用存储节点响应
+ */
+message GetStoreNodeReply {
+  string addresses = 1;
+}
+

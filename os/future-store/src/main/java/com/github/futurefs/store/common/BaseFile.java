@@ -1,9 +1,8 @@
 package com.github.futurefs.store.common;
 
-import com.github.futurefs.common.FilePaddingUtil;
-import com.github.futurefs.common.R;
-import com.github.futurefs.common.RWrapper;
-import com.github.futurefs.common.ResultCode;
+import com.github.futurefs.netty.FilePaddingUtil;
+import com.github.futurefs.netty.R;
+import com.github.futurefs.netty.RWrapper;
 import com.github.futurefs.store.common.constant.StoreConstant;
 import lombok.extern.slf4j.Slf4j;
 
@@ -91,6 +90,11 @@ public class BaseFile {
         doBeforeInit();
         boolean newFile = false;
         try {
+            if (!file.getParentFile().exists()) {
+                Files.createDirectories(Paths.get(file.getParentFile().getAbsolutePath()));
+                newFile = true;
+            }
+
             if (!file.exists()) {
                 Files.createFile(Paths.get(file.getAbsolutePath()));
                 newFile = true;
@@ -114,8 +118,6 @@ public class BaseFile {
 
         return true;
     }
-
-
 
     /**
      * 关闭

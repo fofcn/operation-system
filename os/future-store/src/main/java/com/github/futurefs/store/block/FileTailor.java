@@ -1,5 +1,6 @@
 package com.github.futurefs.store.block;
 
+import com.github.futurefs.store.common.constant.StoreConstant;
 import lombok.Data;
 
 /**
@@ -13,5 +14,5 @@ public class FileTailor {
     /**
      * 文件块尾部魔数
      */
-    private long tailorMagic;
+    private long tailorMagic = StoreConstant.BLOCK_TAILOR_MAGIC_NUMBER;
 }

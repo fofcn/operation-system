@@ -1,5 +1,6 @@
 package com.github.futurefs.store.block;
 
+import com.github.futurefs.store.common.constant.StoreConstant;
 import lombok.Data;
 
 /**
@@ -14,7 +15,7 @@ public class FileHeader {
     /**
      * 文件起始魔数，用于恢复索引数据
      */
-    private long headerMagic;
+    private long headerMagic = StoreConstant.BLOCK_HEADER_MAGIC_NUMBER;
 
     /**
      * 删除状态

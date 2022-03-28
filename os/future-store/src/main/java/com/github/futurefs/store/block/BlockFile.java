@@ -1,8 +1,7 @@
 package com.github.futurefs.store.block;
 
-import com.github.futurefs.common.R;
-import com.github.futurefs.common.RWrapper;
-import com.github.futurefs.common.ResultCode;
+import com.github.futurefs.netty.R;
+import com.github.futurefs.netty.RWrapper;
 import com.github.futurefs.store.block.pubsub.BlockFileProducer;
 import com.github.futurefs.store.common.AppendResult;
 import com.github.futurefs.store.common.BaseFile;

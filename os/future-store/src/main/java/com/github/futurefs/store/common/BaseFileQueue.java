@@ -43,11 +43,10 @@ public class BaseFileQueue {
     /**
      * 文件名称生成器
      */
-    private final BaseFileNameGenerator fileNameGenerator;
+    private BaseFileNameGenerator fileNameGenerator;
 
     public BaseFileQueue(final StoreConfig storeConfig) {
         this.storeConfig = storeConfig;
-        this.fileNameGenerator = () -> "futurefs-store-0";
     }
 
     /**
@@ -98,8 +97,11 @@ public class BaseFileQueue {
     /**
      * 关闭
      */
-    public void close() {
+    public void shutdown() {
        fileTable.entrySet().stream().forEach(entry -> {entry.getValue().close();});
     }
 
+    public void setFileNameGenerator(BaseFileNameGenerator fileNameGenerator) {
+        this.fileNameGenerator = fileNameGenerator;
+    }
 }

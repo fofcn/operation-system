@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.netty";
+option java_outer_classname = "BucketProtos";
+option java_generate_equals_and_hash = true;
+package proto.bucket;
+
+import "Common.proto";
+
+message BucketRequest {
+  oneof BucketNettyRequest {
+      CreateBucketRequest create = 1;
+      GetBucketRequest get = 2;
+      DeleteBucketRequest delete = 3;
+  }
+}
+
+message BucketReply {
+  oneof BucketNettyReply {
+    CreateBucketReply create = 1;
+    GetBucketReply get = 2;
+    DeleteBucketReply delete = 3;
+  }
+}
+
+/**
+ * 创建bucket请求
+ */
+message CreateBucketRequest {
+  string name = 1;
+}
+
+message CreateBucketReply {
+  string name = 1;
+}
+
+/**
+ * 查询bucket请求
+ */
+message GetBucketRequest {
+  string name = 1;
+}
+
+message GetBucketReply {
+  string name = 1;
+}
+
+/**
+ * 删除bucket请求
+ */
+message DeleteBucketRequest {
+  string name = 1;
+}
+
+message DeleteBucketReply {
+  string name = 1;
+}
+
+

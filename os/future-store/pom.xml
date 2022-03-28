@@ -41,5 +41,17 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>${ehcache.version}</version>
+            <systemPath>${project.basedir}/lib/ehcache-3.8.1.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fofcn</groupId>
+            <artifactId>futurefs-netty</artifactId>
+        </dependency>
     </dependencies>
 </project>

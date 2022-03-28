@@ -11,5 +11,16 @@
 
     <artifactId>futurefs-netty</artifactId>
 
-
+    <dependencies>
+        <!-- netty -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
+        <!-- netty -->
+        <dependency>
+            <groupId>com.fofcn</groupId>
+            <artifactId>futurefs-proto</artifactId>
+        </dependency>
+    </dependencies>
 </project>

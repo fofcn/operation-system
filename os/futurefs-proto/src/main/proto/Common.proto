@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.netty";
+option java_outer_classname = "CommonProtos";
+option java_generate_equals_and_hash = true;
+package proto.common;
+
+message CommonRequest {
+  int64 seq = 1; // 序列号
+  RequestType type = 2; // 类型
+  int32 code = 3; // 业务编码
+}
+
+message CommonReply {
+  int64 reqSeq = 1; // 请求ID
+  RequestType type = 2; // 类型
+  int64 code = 3; // 响应码
+  bytes msg = 4; // 描述
+}
+
+enum RequestType {
+  ONE_TYPE_TYPE = 0;
+  REQUEST_TYPE = 1;
+  RESPONSE_TYPE = 2;
+}
+
+
