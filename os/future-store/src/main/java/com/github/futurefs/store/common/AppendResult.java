@@ -1,6 +1,5 @@
 package com.github.futurefs.store.common;
 
-import com.github.futurefs.common.ResultCode;
 import lombok.Data;
 
 /**
@@ -11,10 +10,6 @@ import lombok.Data;
  */
 @Data
 public class AppendResult {
-    /**
-     * 结果
-     */
-    private int result;
 
     /**
      * 写入起始偏移地址
@@ -22,10 +17,10 @@ public class AppendResult {
     private long offset;
 
     public AppendResult() {
-        this(ResultCode.SUCCESS);
+        this(-1L);
     }
 
-    public AppendResult(int result) {
-        this.result = result;
+    public AppendResult(long offset) {
+        this.offset = offset;
     }
 }

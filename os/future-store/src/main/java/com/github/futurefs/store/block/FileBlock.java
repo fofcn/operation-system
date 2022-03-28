@@ -1,5 +1,7 @@
 package com.github.futurefs.store.block;
 
+import com.github.futurefs.store.common.Codec;
+import com.github.futurefs.store.index.IndexSuperBlock;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
@@ -13,7 +15,7 @@ import java.util.zip.Checksum;
  * @date 2022/03/23
  */
 @Data
-public class FileBlock {
+public class FileBlock implements Codec<FileBlock> {
 
     public static final int HEADER_LENGTH = 5 * Long.BYTES;
 
@@ -23,6 +25,7 @@ public class FileBlock {
 
     private FileTailor tailor;
 
+    @Override
     public ByteBuffer encode() {
         Checksum crc64 = new CRC32();
         crc64.update(body, 0, body.length);
@@ -37,6 +40,11 @@ public class FileBlock {
         buffer.putLong(tailor.getTailorMagic());
         buffer.flip();
         return buffer;
+    }
+
+    @Override
+    public FileBlock decode(ByteBuffer buffer) {
+        return null;
     }
 
     public static FileHeader decodeHeader(ByteBuffer buffer) {

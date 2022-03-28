@@ -19,4 +19,6 @@ public interface StoreConstant {
     long STORE_VERSION = 100L;
 
     String BLOCK_TOPIC_NAME = "fileBlock";
+
+    long SUPER_BLOCK_LENGTH = 4096;
 }

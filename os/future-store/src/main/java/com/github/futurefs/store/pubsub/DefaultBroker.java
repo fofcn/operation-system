@@ -21,7 +21,7 @@ public class DefaultBroker implements Broker {
     private final ConcurrentHashMap<String, PubSubRelation> relTable = new ConcurrentHashMap<>(32);
 
     private final AtomicInteger threadIdx = new AtomicInteger(0);
-    private final ThreadPoolExecutor dispatcher = new ThreadPoolExecutor(4, 4, 60L,
+    private final ThreadPoolExecutor dispatcher = new ThreadPoolExecutor(1, 1, 60L,
             TimeUnit.SECONDS, new ArrayBlockingQueue<>(1024), r -> new Thread(r, "broker-dispatcher-" + threadIdx.getAndIncrement()), new ThreadPoolExecutor.AbortPolicy());
 
     /**

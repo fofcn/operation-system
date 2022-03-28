@@ -1,6 +1,8 @@
 package com.github.futurefs.store.common;
 
 import com.github.futurefs.common.FilePaddingUtil;
+import com.github.futurefs.common.R;
+import com.github.futurefs.common.RWrapper;
 import com.github.futurefs.common.ResultCode;
 import com.github.futurefs.store.common.constant.StoreConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -109,6 +111,7 @@ public class BaseFile {
         } catch (IOException e) {
             throw new IllegalArgumentException("file not found, file path: " + file.getAbsolutePath());
         }
+
         return true;
     }
 
@@ -131,7 +134,7 @@ public class BaseFile {
      * @param buffer
      * @return 追加结果
      */
-    public AppendResult append(ByteBuffer buffer) {
+    public R<AppendResult> append(ByteBuffer buffer) {
         AppendResult appendResult = new AppendResult();
         if (readWriteLock.writeLock().tryLock()) {
             int length = buffer.limit();
@@ -143,25 +146,22 @@ public class BaseFile {
                 pos = writePos.get();
                 // 写入数据内容
                 fileChannel.write(buffer, pos);
-                long offset = writePos.addAndGet(length);
+                pos = writePos.addAndGet(length);
 
-                doAfterAppend(offset, length);
+                doAfterAppend(pos, length);
             } catch (IOException e) {
                 log.error("write file error.", e);
-                appendResult.setResult(ResultCode.SYSTEM_ERROR);
-                return appendResult;
+                return RWrapper.fail();
             } finally {
                 readWriteLock.writeLock().unlock();
             }
 
-            appendResult.setResult(ResultCode.SUCCESS);
             appendResult.setOffset(pos);
-            return appendResult;
+            return RWrapper.success(appendResult);
         }
 
         log.error("acquire write lock error");
-        appendResult.setResult(ResultCode.SYSTEM_ERROR);
-        return appendResult;
+        return RWrapper.fail();
     }
 
     /**
@@ -171,9 +171,7 @@ public class BaseFile {
      * @return 读取结果
      */
     public ByteBuffer read(long pos, int length) {
-        byte[] content = new byte[length];
         ByteBuffer buffer = ByteBuffer.allocate(length);
-        ReadResult readResult = new ReadResult();
         if (readWriteLock.readLock().tryLock()) {
             try {
                 fileChannel.position(pos);

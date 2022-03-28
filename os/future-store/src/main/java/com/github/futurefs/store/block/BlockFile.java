@@ -1,5 +1,7 @@
 package com.github.futurefs.store.block;
 
+import com.github.futurefs.common.R;
+import com.github.futurefs.common.RWrapper;
 import com.github.futurefs.common.ResultCode;
 import com.github.futurefs.store.block.pubsub.BlockFileProducer;
 import com.github.futurefs.store.common.AppendResult;
@@ -98,18 +100,22 @@ public class BlockFile extends BaseFile {
         ByteBuffer byteBuffer = mappedBuffer.slice();
         byteBuffer.position(0);
         byteBuffer.put(superBlock.encode());
+        try {
+            flush();
+        } catch (IOException e) {
+            log.error("flush error");
+        }
     }
 
     public AppendResult append(FileBlock fileBlock) {
         ByteBuffer buffer = fileBlock.encode();
-        AppendResult appendResult = append(buffer);
-
-        if (appendResult.getResult() == ResultCode.SUCCESS) {
+        R<AppendResult> appendResult = append(buffer);
+        if (RWrapper.isSuccess(appendResult)) {
             // 异步更新索引文件
-            producer.produce(fileBlock.getHeader(), appendResult.getOffset());
+            producer.produce(fileBlock.getHeader(), appendResult.getData().getOffset());
         }
 
-        return appendResult;
+        return appendResult.getData();
     }
 
     public FileBlock read(long pos) {
