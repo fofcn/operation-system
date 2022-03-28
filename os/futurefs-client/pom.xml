@@ -16,5 +16,10 @@
             <groupId>com.fofcn</groupId>
             <artifactId>futurefs-netty</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.fofcn</groupId>
+            <artifactId>futurefs-common</artifactId>
+        </dependency>
     </dependencies>
 </project>

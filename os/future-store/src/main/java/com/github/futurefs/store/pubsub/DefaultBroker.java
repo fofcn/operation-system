@@ -36,6 +36,7 @@ public class DefaultBroker implements Broker {
         if (relation == null) {
             relation = new PubSubRelation();
             relation.setTopic(topic);
+            relTable.put(topicName, relation);
         }
         relation.getConsumerList().add(consumer);
     }
@@ -51,6 +52,7 @@ public class DefaultBroker implements Broker {
         if (relation == null) {
             relation = new PubSubRelation();
             relation.setTopic(topic);
+            relTable.put(topicName, relation);
         }
         relation.getProducerList().add(producer);
     }
@@ -67,6 +69,7 @@ public class DefaultBroker implements Broker {
         PubSubRelation relation = relTable.get(topicName);
         if (ObjectUtils.isEmpty(relation)) {
             log.warn("pub/sub relation does not exists, topic: <{}>, we will discard this message", topicName);
+            return;
         }
 
         // 并发调度执行
