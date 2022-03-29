@@ -1,4 +1,4 @@
-package com.github.futurefs.client;
+package com.github.futurefs.client.api;
 
 import com.github.futurefs.netty.FileDataProtos;
 import com.github.futurefs.netty.NettyProtos;

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.netty";
+option java_outer_classname = "OffsetProtos";
+option java_generate_equals_and_hash = true;
+package proto.offset;
+
+message WriteOffsetRequest {
+  int32 length = 1;
+}
+
+message WriteOffsetReply {
+  bool success = 1;
+  string errMsg = 2;
+  int64 offset = 3;
+}
+
+enum RequestType {
+  ONE_TYPE_TYPE = 0;
+  REQUEST_TYPE = 1;
+  RESPONSE_TYPE = 2;
+}
+
+
