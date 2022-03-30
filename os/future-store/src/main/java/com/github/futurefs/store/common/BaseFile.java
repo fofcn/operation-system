@@ -272,4 +272,8 @@ public class BaseFile {
     protected void flush() throws IOException {
         fileChannel.force(false);
     }
+
+    protected long getWritePos() {
+        return writePos.get();
+    }
 }

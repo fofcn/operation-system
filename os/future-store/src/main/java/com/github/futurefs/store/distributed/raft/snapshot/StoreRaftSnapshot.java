@@ -1,4 +1,4 @@
-package com.github.futurefs.store.raft.snapshot;
+package com.github.futurefs.store.distributed.raft.snapshot;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;

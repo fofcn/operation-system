@@ -55,9 +55,9 @@ public class BaseFileQueue {
     public boolean init() {
         try {
             // 目录不存在则创建目录
-            File dirFile = new File(storeConfig.getDir());
+            File dirFile = new File(storeConfig.getBlockPath());
             if (!dirFile.exists()) {
-                Files.createDirectories(Paths.get(storeConfig.getDir()));
+                Files.createDirectories(Paths.get(storeConfig.getBlockPath()));
             }
 
             // 遍历目录下文件列表
@@ -81,7 +81,7 @@ public class BaseFileQueue {
             } else {
                 // 创建一个新的存储文件
                 String name = fileNameGenerator.generator();
-                File file = new File(storeConfig.getDir() + File.pathSeparator + name);
+                File file = new File(storeConfig.getBlockPath() + File.pathSeparator + name);
                 BaseFile baseFile = new BaseFile(file);
                 // 添加到文件列表
                 fileTable.put(file.getName(), baseFile);

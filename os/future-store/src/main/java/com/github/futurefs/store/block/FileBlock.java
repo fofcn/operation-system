@@ -1,7 +1,6 @@
 package com.github.futurefs.store.block;
 
 import com.github.futurefs.store.common.Codec;
-import com.github.futurefs.store.index.IndexSuperBlock;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
@@ -18,6 +17,8 @@ import java.util.zip.Checksum;
 public class FileBlock implements Codec<FileBlock> {
 
     public static final int HEADER_LENGTH = 5 * Long.BYTES;
+
+    public static final int TAILOR_LENGTH = Long.BYTES;
 
     private FileHeader header;
 
@@ -60,5 +61,15 @@ public class FileBlock implements Codec<FileBlock> {
         header.setKey(buffer.getLong());
         header.setLength(buffer.getLong());
         return header;
+    }
+
+    public static int calcAlignLen(int bodyLen) {
+        int fileLen = 6 * Long.BYTES + bodyLen;
+        int padding = fileLen % 8;
+        if (padding != 0) {
+            fileLen += (Long.BYTES - padding);
+        }
+
+        return fileLen;
     }
 }

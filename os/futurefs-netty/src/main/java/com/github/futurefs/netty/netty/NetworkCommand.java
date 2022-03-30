@@ -107,6 +107,14 @@ public class NetworkCommand {
         return cmd;
     }
 
+    public static NetworkCommand createResponseCommand(int code, byte[] body) {
+        NetworkCommand cmd = new NetworkCommand();
+        cmd.setType(RESPONSE_TYPE);
+        cmd.setCode(code);
+        cmd.setBody(body);
+        return cmd;
+    }
+
     public static NetworkCommand createResponseCommand(int code, Class<? extends CommandCustomHeader> classOfType) {
         NetworkCommand cmd = new NetworkCommand();
         cmd.setType(RESPONSE_TYPE);

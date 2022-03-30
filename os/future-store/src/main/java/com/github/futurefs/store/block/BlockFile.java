@@ -33,12 +33,15 @@ public class BlockFile extends BaseFile {
 
     private final BlockFileProducer producer;
 
+    private final PreAllocOffset preAllocOffset;
+
     public BlockFile(File file, final Broker broker) {
         super(file);
         this.superBlock = new SuperBlock(StoreConstant.STORE_SUPER_MAGIC_NUMBER,
                 StoreConstant.STORE_SUPER_MAGIC_NUMBER, 0L, 0L);
         this.broker = broker;
         this.producer = new BlockFileProducer(broker);
+        this.preAllocOffset = new PreAllocOffset();
     }
 
     @Override
@@ -66,6 +69,7 @@ public class BlockFile extends BaseFile {
     @Override
     protected void doAfterInit() {
         broker.registerProducer(StoreConstant.BLOCK_TOPIC_NAME, producer);
+        preAllocOffset.set(getWritePos());
     }
 
     @Override

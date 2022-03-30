@@ -39,7 +39,7 @@ public class BucketManager implements Service {
         // 心跳上报硬盘数据与是否可写
         timer.scheduleAtFixedRate(() -> {
             try {
-                Map<String, Long> diskInfo = DiskUtil.getDiskSpace(storeConfig.getDir());
+                Map<String, Long> diskInfo = DiskUtil.getDiskSpace(storeConfig.getBlockPath());
 
             } catch (IOException e) {
                 log.error("get disk space error", e);

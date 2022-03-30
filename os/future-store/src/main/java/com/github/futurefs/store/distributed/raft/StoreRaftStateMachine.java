@@ -1,4 +1,4 @@
-package com.github.futurefs.store.raft;
+package com.github.futurefs.store.distributed.raft;
 
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
@@ -11,7 +11,7 @@ import com.alipay.sofa.jraft.error.RaftException;
 import com.alipay.sofa.jraft.storage.snapshot.SnapshotReader;
 import com.alipay.sofa.jraft.storage.snapshot.SnapshotWriter;
 import com.alipay.sofa.jraft.util.Utils;
-import com.github.futurefs.store.raft.snapshot.StoreRaftSnapshot;
+import com.github.futurefs.store.distributed.raft.snapshot.StoreRaftSnapshot;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;

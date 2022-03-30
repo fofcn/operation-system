@@ -1,4 +1,4 @@
-package com.github.futurefs.store.raft;
+package com.github.futurefs.store.distributed.raft;
 
 import java.io.Serializable;
 

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.netty";
+option java_outer_classname = "VoteProtos";
+option java_generate_equals_and_hash = true;
+package proto.vote;
+
+message VoteWinRequest {
+  int32 peerId = 1;
+  string address = 2;
+}
+
+message VoteWinReply {
+  int32 peerId = 1;
+}
+

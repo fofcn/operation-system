@@ -1,4 +1,4 @@
-package com.github.futurefs.store.raft.rpc;
+package com.github.futurefs.store.distributed.raft.rpc;
 
 import com.alipay.sofa.jraft.rpc.RpcServer;
 import com.alipay.sofa.jraft.util.RpcFactoryHelper;

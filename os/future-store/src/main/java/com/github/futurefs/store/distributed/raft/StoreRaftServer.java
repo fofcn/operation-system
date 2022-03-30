@@ -1,4 +1,4 @@
-package com.github.futurefs.store.raft;
+package com.github.futurefs.store.distributed.raft;
 
 import com.alipay.sofa.jraft.Node;
 import com.alipay.sofa.jraft.RaftGroupService;
@@ -10,9 +10,8 @@ import com.alipay.sofa.jraft.rpc.RpcServer;
 import com.alipay.sofa.jraft.storage.impl.RocksDBLogStorage;
 import com.alipay.sofa.jraft.util.StorageOptionsFactory;
 import com.github.futurefs.netty.OffsetProtos;
-import com.github.futurefs.store.config.StoreConfig;
-import com.github.futurefs.store.raft.rpc.StoreGrpcHelper;
-import com.github.futurefs.store.raft.rpc.WriteOffsetRequestProcessor;
+import com.github.futurefs.store.distributed.raft.rpc.StoreGrpcHelper;
+import com.github.futurefs.store.distributed.raft.rpc.WriteOffsetRequestProcessor;
 import org.apache.commons.io.FileUtils;
 import org.rocksdb.BlockBasedTableConfig;
 import org.rocksdb.BloomFilter;

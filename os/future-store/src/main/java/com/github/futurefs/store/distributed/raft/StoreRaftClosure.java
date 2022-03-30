@@ -1,4 +1,4 @@
-package com.github.futurefs.store.raft;
+package com.github.futurefs.store.distributed.raft;
 
 import com.alipay.sofa.jraft.Closure;
 import com.github.futurefs.netty.OffsetProtos;
