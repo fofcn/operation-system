@@ -9,7 +9,8 @@ import "Common.proto";
 
 message FileRequest {
   int64 length = 1;
-  bytes data = 2;
+  int64 offset = 2;
+  bytes data = 3;
 }
 
 message FileReply {

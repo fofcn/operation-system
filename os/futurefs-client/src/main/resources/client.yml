@@ -1,0 +1,15 @@
+trikyfs:
+  storeNodes:
+    - "127.0.0.1:60000"
+  threadCnt: 2
+  # TCP客户端配置
+  tcpClientConfig:
+    clientWorkerThreads: 4
+    connectTimeoutMillis: 30000
+    channelNotActiveInterval: 60000
+    clientChannelMaxIdleTimeSeconds: 120
+    clientSocketSndBufSize: 65535
+    clientSocketRcvBufSize: 65535
+    queueCapacity: 1000
+    useTLS: false
+    tlsFile:

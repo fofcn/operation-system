@@ -9,7 +9,7 @@ import java.io.InputStream;
  * @author errorfatal89@gmail.com
  * @datetime 2022/03/29 FutureClientApi
  */
-public interface ClientApi {
+public interface TrickyClient {
 
     /**
      * 写入文件
