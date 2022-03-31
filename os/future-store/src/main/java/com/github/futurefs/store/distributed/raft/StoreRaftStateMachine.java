@@ -1,7 +1,5 @@
 package com.github.futurefs.store.distributed.raft;
 
-import com.alipay.remoting.exception.CodecException;
-import com.alipay.remoting.serialization.SerializerManager;
 import com.alipay.sofa.jraft.Closure;
 import com.alipay.sofa.jraft.Iterator;
 import com.alipay.sofa.jraft.Status;
@@ -56,16 +54,16 @@ public class StoreRaftStateMachine extends StateMachineAdapter {
             if (iter.done() != null) {
                 // This task is applied by this node, get value from closure to avoid additional parsing.
                 closure = (StoreRaftClosure) iter.done();
-                storeR = closure.getCounterOperation();
+//                storeR = closure.getCounterOperation();
             } else {
                 // Have to parse FetchAddRequest from this user log.
                 final ByteBuffer data = iter.getData();
-                try {
-                    storeR = SerializerManager.getSerializer(SerializerManager.Hessian2).deserialize(
-                            data.array(), StoreRaftOperation.class.getName());
-                } catch (final CodecException e) {
-                    log.error("Fail to decode IncrementAndGetRequest", e);
-                }
+//                try {
+//                    storeR = SerializerManager.getSerializer(SerializerManager.Hessian2).deserialize(
+//                            data.array(), StoreRaftOperation.class.getName());
+//                } catch (final CodecException e) {
+//                    log.error("Fail to decode IncrementAndGetRequest", e);
+//                }
             }
             if (storeR != null) {
                 log.info("Added offset={}  at logIndex={}", storeR.getWritePos(), iter.getIndex());

@@ -83,6 +83,14 @@ public class NetworkCommand {
         return null;
     }
 
+    public static NetworkCommand createRequestCommand(int code, byte[] body) {
+        NetworkCommand cmd = new NetworkCommand();
+        cmd.setCode(code);
+        cmd.setType(REQUEST_TYPE);
+        cmd.setBody(body);
+        return cmd;
+    }
+
     public static NetworkCommand createRequestCommand(int code, CommandCustomHeader commandCustomHeader) {
         NetworkCommand cmd = new NetworkCommand();
         cmd.setCode(code);
@@ -237,7 +245,7 @@ public class NetworkCommand {
         return null;
     }
 
-    public static boolean isResponseOK(NetworkCommand response) {
+    public static boolean isResponseOk(NetworkCommand response) {
         return response != null && response.getCode() == ResponseCode.SUCCESS.getCode();
     }
 

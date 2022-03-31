@@ -1,17 +1,13 @@
 package com.github.futurefs.store;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.futurefs.netty.YamlUtil;
 import com.github.futurefs.store.config.StoreConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 存储主函数
@@ -23,9 +19,22 @@ import java.util.Map;
 public class FutureStoreMain {
 
     public static void main(String[] args) {
-        InputStream in = FutureStoreMain.class.getResourceAsStream("/store.yml");
-        if (ObjectUtils.isEmpty(in)) {
-            log.error("config file not found");
+        if (args.length != 1) {
+            log.error("miss start up arguments: configFile");
+            return;
+        }
+
+        File confFile = new File(args[0]);
+        if (!confFile.exists()) {
+            log.error("start up config not found: <{}>", args[0]);
+            return;
+        }
+
+        InputStream in = null;
+        try {
+            in = new FileInputStream(confFile);
+        } catch (FileNotFoundException e) {
+            log.error("start up config open failed: <{}>", args[0]);
             return;
         }
 

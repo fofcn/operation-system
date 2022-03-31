@@ -28,7 +28,12 @@ public class FileOffsetProcessor implements NettyRequestProcessor {
         WriteOffsetRequest req = WriteOffsetRequest.parseFrom(request.getBody());
         int length = FileBlock.calcAlignLen(req.getLength());
         long offset = preAllocOffset.alloc(length);
-        WriteOffsetReply reply = WriteOffsetReply.newBuilder().setSuccess(true).setOffset(offset).build();
+        WriteOffsetReply reply;
+        if (offset == -1L) {
+            reply = WriteOffsetReply.newBuilder().setSuccess(false).setOffset(offset).build();
+        } else {
+            reply = WriteOffsetReply.newBuilder().setSuccess(true).setOffset(offset).build();
+        }
 
         // 封装返回
         return NetworkCommand.createResponseCommand(ResponseCode.SUCCESS.getCode(), reply.toByteArray());

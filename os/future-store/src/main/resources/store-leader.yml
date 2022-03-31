@@ -33,12 +33,12 @@ trickyfs:
     useTLS: false
     tlsFile:
 
-    # 选举配置
-    clusterConfig:
-      mode: LEADER-FOLLOWER
-      peerId: 1
-      role: LEADER
-      address: 172.0.0.1:600001
-      followers:
-        - 172.0.0.1:600002
-        - 172.0.0.1:600003
+  # 选举配置
+  clusterConfig:
+    mode: LEADER-FOLLOWER
+    peerId: 1
+    role: LEADER
+    address: 172.0.0.1:60001
+    nodes:
+      - 172.0.0.1:60002
+      - 172.0.0.1:60003

@@ -9,12 +9,14 @@ import "Bucket.proto";
 import "Store.proto";
 import "FileData.proto";
 import "Common.proto";
+import "Offset.proto";
 
 message NettyRequest {
   oneof Request {
       proto.bucket.BucketRequest bucketRequest = 1;
       proto.store.NodeRequest nodeRequest = 2;
       proto.file.FileRequest fileRequest = 3;
+      proto.offset.WriteOffsetRequest offsetRequest = 4;
   }
 }
 
@@ -23,5 +25,6 @@ message NettyReply {
     proto.bucket.BucketReply bucketReply = 1;
     proto.store.NodeReply nodeReply = 2;
     proto.file.FileReply fileReply = 3;
+    proto.offset.WriteOffsetReply offsetReply = 4;
   }
 }

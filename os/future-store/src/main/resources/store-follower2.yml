@@ -1,12 +1,12 @@
 trickyfs:
   # 角色： LEADER/FOLLOWER
-  role: LEADER
+  role: FOLLOWER
   # raft数据目录
-  raftDataPath: trickyfs/raft
+  raftDataPath: trickyfs/follower2/raft
   # 主存储目录
-  blockPath: trickyfs/block
+  blockPath: trickyfs/follower2/block
   # 索引存储目录
-  indexPath: trickyfs/index
+  indexPath: trickyfs/follower2/index
   # bucket集群配置
   bucketCluster: "127.0.01:61000;127.0.01:61001;127.0.01:61002"
   buckets: trickyfs-a
@@ -33,12 +33,12 @@ trickyfs:
     useTLS: false
     tlsFile:
 
-    # 选举配置
-    clusterConfig:
-      mode: LEADER-FOLLOWER
-      peerId: 1
-      role: LEADER
-      address: 172.0.0.1:600001
-      followers:
-        - 172.0.0.1:600002
-        - 172.0.0.1:600003
+  # 选举配置
+  clusterConfig:
+    mode: LEADER-FOLLOWER
+    peerId: 3
+    role: FOLLOWER
+    address: 172.0.0.1:60003
+    nodes:
+      - 172.0.0.1:60001
+      - 172.0.0.1:60002

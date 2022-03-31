@@ -7,6 +7,7 @@ import com.github.futurefs.store.common.AppendResult;
 import com.github.futurefs.store.common.BaseFile;
 import com.github.futurefs.store.common.constant.StoreConstant;
 import com.github.futurefs.store.pubsub.Broker;
+import com.github.futurefs.store.rpc.RpcClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -35,13 +36,13 @@ public class BlockFile extends BaseFile {
 
     private final PreAllocOffset preAllocOffset;
 
-    public BlockFile(File file, final Broker broker) {
+    public BlockFile(File file, final Broker broker, final RpcClient rpcClient) {
         super(file);
         this.superBlock = new SuperBlock(StoreConstant.STORE_SUPER_MAGIC_NUMBER,
                 StoreConstant.STORE_SUPER_MAGIC_NUMBER, 0L, 0L);
         this.broker = broker;
         this.producer = new BlockFileProducer(broker);
-        this.preAllocOffset = new PreAllocOffset();
+        this.preAllocOffset = new PreAllocOffset(rpcClient);
     }
 
     @Override
@@ -136,5 +137,9 @@ public class BlockFile extends BaseFile {
         fileTailor.setTailorMagic(buffer.getLong());
         fileBlock.setTailor(fileTailor);
         return fileBlock;
+    }
+
+    public PreAllocOffset getPreAllocOffset() {
+        return preAllocOffset;
     }
 }

@@ -63,4 +63,10 @@ public class StoreConfig {
     @JsonProperty
     private String raftDataPath;
 
+    /**
+     * 集群配置
+     */
+    @JsonProperty
+    private StoreClusterConfig clusterConfig;
+
 }
