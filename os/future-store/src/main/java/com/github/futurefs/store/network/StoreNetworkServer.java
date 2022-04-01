@@ -14,7 +14,7 @@ import com.github.futurefs.store.block.BlockFile;
  */
 public class StoreNetworkServer {
 
-    private volatile NetworkServer server;
+    private NetworkServer server;
 
     private final BlockFile blockFile;
 

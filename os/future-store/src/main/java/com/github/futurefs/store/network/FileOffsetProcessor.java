@@ -27,6 +27,7 @@ public class FileOffsetProcessor implements NettyRequestProcessor {
     public NetworkCommand processRequest(ChannelHandlerContext ctx, NetworkCommand request) throws Exception {
         WriteOffsetRequest req = WriteOffsetRequest.parseFrom(request.getBody());
         int length = FileBlock.calcAlignLen(req.getLength());
+        // todo 判断自己是否为LEADER，如果是LEADER则响应，响应为-1L
         long offset = preAllocOffset.alloc(length);
         WriteOffsetReply reply;
         if (offset == -1L) {
