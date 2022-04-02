@@ -92,6 +92,9 @@ public class MasterSlaveClusterImpl implements ClusterManager {
     public boolean init() {
         rpcServer.init();
 
+        // 文件新增消费者，监听文件新增以满足长轮询
+        broker.registerConsumer();
+
         // 启动ping定时任务
         timerExecutor.scheduleAtFixedRate(() -> {
             if (masterSlaveRole.equals(MasterSlaveRole.SLAVE)) {
