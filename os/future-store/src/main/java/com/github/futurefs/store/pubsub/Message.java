@@ -13,4 +13,10 @@ public interface Message {
      * @return 主题名称
      */
     String getTopicName();
+
+    /**
+     * 获取优先级
+     * @return
+     */
+    default int getPriority() {return 0;}
 }

@@ -18,6 +18,6 @@ public class DefaultProducer implements Producer {
 
     @Override
     public void produce(Message message) {
-        broker.sendMessage(message);
+        broker.deliver(message);
     }
 }

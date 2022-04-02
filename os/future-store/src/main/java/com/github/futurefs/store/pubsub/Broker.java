@@ -22,8 +22,13 @@ public interface Broker {
     void registerProducer(String topic, Producer producer);
 
     /**
-     * 发送消息
+     * 投递消息
      * @param message 消息内容
      */
-    void sendMessage(Message message);
+    void deliver(Message message);
+
+    /**
+     * 停止broker
+     */
+    void stop();
 }
