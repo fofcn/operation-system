@@ -8,7 +8,7 @@ package com.github.futurefs.store.common.enums;
  */
 public enum ClusterMode {
 
-    LEADER_FOLLOWER(1, "主从复制"),
+    MASTER_SLAVE(1, "主从复制"),
     LEADER_FOLLOWER_LEARNER(2, "主从从复制"),
     LEADER_FOLLOWER_CANDIDATE(3, "一致性复制");
 

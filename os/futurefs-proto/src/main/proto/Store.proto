@@ -5,8 +5,6 @@ option java_outer_classname = "StoreProtos";
 option java_generate_equals_and_hash = true;
 package proto.store;
 
-import "Common.proto";
-
 message NodeRequest {
   oneof NodeReq {
       CreateNodeRequest create = 1;

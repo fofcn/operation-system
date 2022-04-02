@@ -52,7 +52,7 @@
             <groupId>org.ehcache</groupId>
             <artifactId>ehcache</artifactId>
             <version>${ehcache.version}</version>
-            <systemPath>${project.basedir}/lib/ehcache-3.8.1.jar</systemPath>
+<!--            <systemPath>${project.basedir}/lib/ehcache-3.8.1.jar</systemPath>-->
         </dependency>
 
         <dependency>

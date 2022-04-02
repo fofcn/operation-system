@@ -12,11 +12,11 @@ import com.github.futurefs.store.pubsub.Message;
  * @author errorfatal89@gmail.com
  * @datetime 2022/03/25 17:09
  */
-public class BlockFileConsumer implements Consumer {
+public class IndexFileConsumer implements Consumer {
 
     private final IndexTable indexFile;
 
-    public BlockFileConsumer(IndexTable indexFile) {
+    public IndexFileConsumer(IndexTable indexFile) {
         this.indexFile = indexFile;
     }
 

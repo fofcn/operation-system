@@ -1,5 +1,7 @@
 package com.github.futurefs.store.rpc;
 
+import com.github.futurefs.store.rpc.config.RpcConfig;
+
 /**
  * Rpc服务工厂
  *

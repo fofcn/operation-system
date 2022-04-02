@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.netty";
+option java_outer_classname = "ClusterProtos";
+option java_generate_equals_and_hash = true;
+package proto.cluster;
+
+message ClusterRequest {
+  oneof Request {
+      PingRequest pingRequest  = 1;
+      ReplicateRequest replicateRequest = 2;
+      ReplicateDataRequest dataRequest = 3;
+  }
+}
+
+message ClusterReply {
+  oneof Reply {
+    PingReply pingReply = 1;
+  }
+}
+
+/*
+ * ping请求
+ */
+message PingRequest {
+  int32 peerId = 1; // 对等端Id
+  int64 syncOffset = 2; // slave 当前偏移
+  int64 totalSpace = 3; // 总磁盘空间
+  int64 usedSpace = 4; // 已使用磁盘空间
+  int64 freeSpace = 5; // 可用磁盘空间
+  bool canWrite = 6; // 是否可写
+  string address = 7; // 同步客户端地址
+}
+
+/*
+ * ping响应
+ */
+message PingReply {
+  bool success = 1;
+  int32 peerId = 2; // master id
+  int64 writePos = 3; // master写入偏移
+}
+
+/**
+ * 复制请求
+ */
+message ReplicateRequest {
+  int32 peerId = 1;
+  int64 offset = 2; // 同步写入偏移
+}
+
+/**
+ * 复制数据请求
+ */
+message ReplicateDataRequest {
+  int32 peerId = 2; // master id
+  int64 offset = 3; // master同步写入偏移
+  int32 syncLength = 4; // 本次同步块长度
+  bytes content = 5; // 本次同步内容
+}
+
+

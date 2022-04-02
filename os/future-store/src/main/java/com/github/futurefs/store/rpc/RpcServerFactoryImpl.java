@@ -1,5 +1,6 @@
 package com.github.futurefs.store.rpc;
 
+import com.github.futurefs.store.rpc.config.RpcConfig;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -17,7 +18,7 @@ public class RpcServerFactoryImpl implements RpcServerFactory {
             // todo 待实现
             throw new NotImplementedException();
         } else {
-            rpcServer = new NettyRpcServer();
+            rpcServer = new NettyRpcServer(rpcConfig);
         }
 
         return rpcServer;

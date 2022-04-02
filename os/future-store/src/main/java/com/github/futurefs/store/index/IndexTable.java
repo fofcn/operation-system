@@ -5,7 +5,7 @@ import com.github.futurefs.netty.RWrapper;
 import com.github.futurefs.store.common.AppendResult;
 import com.github.futurefs.store.common.BaseFile;
 import com.github.futurefs.store.common.constant.StoreConstant;
-import com.github.futurefs.store.index.pubsub.BlockFileConsumer;
+import com.github.futurefs.store.index.pubsub.IndexFileConsumer;
 import com.github.futurefs.store.pubsub.Broker;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -72,7 +72,7 @@ public class IndexTable extends BaseFile {
 
     @Override
     protected void doAfterInit() {
-        broker.registerConsumer(StoreConstant.BLOCK_TOPIC_NAME, new BlockFileConsumer(this));
+        broker.registerConsumer(StoreConstant.BLOCK_TOPIC_NAME, new IndexFileConsumer(this));
     }
 
 }

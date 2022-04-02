@@ -5,8 +5,6 @@ option java_outer_classname = "FileDataProtos";
 option java_generate_equals_and_hash = true;
 package proto.file;
 
-import "Common.proto";
-
 message FileRequest {
   int64 length = 1;
   int64 offset = 2;

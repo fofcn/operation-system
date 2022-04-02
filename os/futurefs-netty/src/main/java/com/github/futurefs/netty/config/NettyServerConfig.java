@@ -1,8 +1,11 @@
 package com.github.futurefs.netty.config;
 
+import lombok.Data;
+
 /**
  * @author errorfatal89@gmail.com
  */
+@Data
 public class NettyServerConfig {
 
     private String host;
@@ -22,78 +25,6 @@ public class NettyServerConfig {
     private boolean useTLS = false;
 
     private String tlsFile;
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getListenPort() {
-        return listenPort;
-    }
-
-    public void setListenPort(int listenPort) {
-        this.listenPort = listenPort;
-    }
-
-    public int getServerWorkerThreads() {
-        return serverWorkerThreads;
-    }
-
-    public void setServerWorkerThreads(int serverWorkerThreads) {
-        this.serverWorkerThreads = serverWorkerThreads;
-    }
-
-    public int getServerSelectorThreads() {
-        return serverSelectorThreads;
-    }
-
-    public void setServerSelectorThreads(int serverSelectorThreads) {
-        this.serverSelectorThreads = serverSelectorThreads;
-    }
-
-    public int getServerSocketSndBufSize() {
-        return serverSocketSndBufSize;
-    }
-
-    public void setServerSocketSndBufSize(int serverSocketSndBufSize) {
-        this.serverSocketSndBufSize = serverSocketSndBufSize;
-    }
-
-    public int getServerSocketRcvBufSize() {
-        return serverSocketRcvBufSize;
-    }
-
-    public void setServerSocketRcvBufSize(int serverSocketRcvBufSize) {
-        this.serverSocketRcvBufSize = serverSocketRcvBufSize;
-    }
-
-    public int getServerChannelMaxIdleTimeSeconds() {
-        return serverChannelMaxIdleTimeSeconds;
-    }
-
-    public void setServerChannelMaxIdleTimeSeconds(int serverChannelMaxIdleTimeSeconds) {
-        this.serverChannelMaxIdleTimeSeconds = serverChannelMaxIdleTimeSeconds;
-    }
-
-    public boolean isUseTLS() {
-        return useTLS;
-    }
-
-    public void setUseTLS(boolean useTLS) {
-        this.useTLS = useTLS;
-    }
-
-    public String getTlsFile() {
-        return tlsFile;
-    }
-
-    public void setTlsFile(String tlsFile) {
-        this.tlsFile = tlsFile;
-    }
 
     @Override
     public String toString() {

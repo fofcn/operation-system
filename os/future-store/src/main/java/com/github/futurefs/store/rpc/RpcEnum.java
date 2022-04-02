@@ -15,8 +15,4 @@ public enum RpcEnum {
     RpcEnum(String code) {
         this.code = code;
     }
-
-    public String getCode() {
-        return code;
-    }
 }

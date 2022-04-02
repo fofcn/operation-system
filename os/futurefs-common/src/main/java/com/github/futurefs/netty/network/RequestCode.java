@@ -16,4 +16,19 @@ public class RequestCode {
      * 偏移查询
      */
     public static final int OFFSET_QUERY = 2;
+
+    /**
+     * ping
+     */
+    public static final int PING = 3;
+
+    /**
+     * 复制单个文件数据
+     */
+    public static final int REPLICATE = 4;
+
+    /**
+     * 复制请求
+     */
+    public static final int REPLICATE_DATA = 5;
 }

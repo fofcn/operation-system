@@ -35,10 +35,10 @@ trickyfs:
 
   # 选举配置
   clusterConfig:
-    mode: LEADER-FOLLOWER
+    mode: 1
     peerId: 1
     role: LEADER
     address: 172.0.0.1:60001
     nodes:
-      - 172.0.0.1:60002
-      - 172.0.0.1:60003
+      - 2:172.0.0.1:60002
+      - 3:172.0.0.1:60003

@@ -273,7 +273,7 @@ public class BaseFile {
         fileChannel.force(false);
     }
 
-    protected long getWritePos() {
+    public long getWritePos() {
         return writePos.get();
     }
 }

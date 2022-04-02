@@ -1,12 +1,11 @@
 package com.github.futurefs.store.rpc;
 
 import com.github.futurefs.netty.NetworkServer;
-import com.github.futurefs.netty.Service;
-import com.github.futurefs.netty.config.NettyServerConfig;
 import com.github.futurefs.netty.interceptor.RequestInterceptor;
 import com.github.futurefs.netty.netty.NettyNetworkServer;
 import com.github.futurefs.netty.processor.NettyRequestProcessor;
 import com.github.futurefs.netty.processor.RequestProcessor;
+import com.github.futurefs.store.rpc.config.RpcConfig;
 
 /**
  * RpcServer端
@@ -45,5 +44,14 @@ public class NettyRpcServer implements RpcServer {
     @Override
     public void registerInterceptor(RequestInterceptor interceptor) {
         server.registerInterceptor(interceptor);
+    }
+
+    /**
+     * Rpc客户端配置
+     *
+     * @author errorfatal89@gmail.com
+     * @datetime 2022/04/02 11:14
+     */
+    public static class RpcClientConfig {
     }
 }

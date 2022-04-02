@@ -39,6 +39,6 @@ trickyfs:
       peerId: 1
       role: LEADER
       address: 172.0.0.1:600001
-      followers:
+      peers:
         - 172.0.0.1:600002
         - 172.0.0.1:600003

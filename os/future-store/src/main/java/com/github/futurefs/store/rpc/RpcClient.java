@@ -3,6 +3,10 @@ package com.github.futurefs.store.rpc;
 import com.github.futurefs.netty.NettyProtos;
 import com.github.futurefs.netty.NetworkClient;
 import com.github.futurefs.netty.config.NettyClientConfig;
+import com.github.futurefs.netty.exception.NetworkConnectException;
+import com.github.futurefs.netty.exception.NetworkSendRequestException;
+import com.github.futurefs.netty.exception.NetworkTimeoutException;
+import com.github.futurefs.netty.exception.TrickyFsException;
 import com.github.futurefs.netty.netty.NettyNetworkClient;
 import com.github.futurefs.netty.netty.NetworkCommand;
 import com.github.futurefs.netty.thread.PoolHelper;
@@ -13,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -37,7 +42,7 @@ public class RpcClient {
     /**
      * 对等端表
      */
-    private final ConcurrentHashMap<Integer, String> peerTable = new ConcurrentHashMap<>(3);
+    private final CopyOnWriteArrayList<String> peers = new CopyOnWriteArrayList<>();
 
     public RpcClient(final NettyClientConfig nettyClientConfig, final int concurrent, final List<String> peers) {
         this.networkClient = new NettyNetworkClient(nettyClientConfig);
@@ -46,7 +51,7 @@ public class RpcClient {
         this.broadcastPool = PoolHelper.newFixedPool("offset", "offset-", concurrent, 1024);
 
         for (int i = 0; i < peers.size(); i++) {
-            peerTable.put(i, peers.get(i));
+            peers.add(peers.get(i));
         }
     }
 
@@ -58,8 +63,8 @@ public class RpcClient {
      */
     public List<NettyProtos.NettyReply> callSync(int requestCode, NettyProtos.NettyRequest request) {
         NetworkCommand networkCommand = NetworkCommand.createRequestCommand(requestCode, request.toByteArray());
-        List<Callable<NettyProtos.NettyReply>> callableList = new ArrayList<>(peerTable.size());
-        peerTable.values().forEach(address -> {
+        List<Callable<NettyProtos.NettyReply>> callableList = new ArrayList<>(peers.size());
+        peers.forEach(address -> {
             callableList.add(() -> {
                 NetworkCommand response = networkClient.sendSync(address, networkCommand, waitMillis);
                 if (NetworkCommand.isResponseOk(response)) {
@@ -74,12 +79,35 @@ public class RpcClient {
     }
 
     /**
+     * 同步调用
+     * @param requestCode 请求码
+     * @param request 请求
+     * @return 结果
+     */
+    public void callOneWay(int requestCode, NettyProtos.NettyRequest request) throws TrickyFsException {
+        NetworkCommand networkCommand = NetworkCommand.createRequestCommand(requestCode, request.toByteArray());
+        if (peers.size() != 1) {
+            try {
+                networkClient.sendOneway(peers.get(0), networkCommand, waitMillis, null);
+            } catch (NetworkConnectException e) {
+                throw new TrickyFsException(e);
+            } catch (NetworkSendRequestException e) {
+                throw new TrickyFsException(e);
+            } catch (InterruptedException e) {
+                throw new TrickyFsException(e);
+            } catch (NetworkTimeoutException e) {
+                throw new TrickyFsException(e);
+            }
+        }
+    }
+
+    /**
      * 同步组播
      * @param tasks 组播任务
      * @param <T> 组播返回
      * @return
      */
-    public <T> List<T> parallelTask(List<Callable<T>> tasks, long waitMillis) {
+    private <T> List<T> parallelTask(List<Callable<T>> tasks, long waitMillis) {
         if (CollectionUtils.isEmpty(tasks)) {
             return null;
         }

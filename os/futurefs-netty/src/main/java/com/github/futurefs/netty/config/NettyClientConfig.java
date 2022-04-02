@@ -1,8 +1,11 @@
 package com.github.futurefs.netty.config;
 
+import lombok.Data;
+
 /**
  * @author errorfatal89@gmail.com
  */
+@Data
 public class NettyClientConfig {
 
     private int clientWorkerThreads = 4;
@@ -22,78 +25,6 @@ public class NettyClientConfig {
     private boolean useTLS = false;
 
     private String tlsFile;
-
-    public int getClientWorkerThreads() {
-        return clientWorkerThreads;
-    }
-
-    public void setClientWorkerThreads(int clientWorkerThreads) {
-        this.clientWorkerThreads = clientWorkerThreads;
-    }
-
-    public int getConnectTimeoutMillis() {
-        return connectTimeoutMillis;
-    }
-
-    public void setConnectTimeoutMillis(int connectTimeoutMillis) {
-        this.connectTimeoutMillis = connectTimeoutMillis;
-    }
-
-    public long getChannelNotActiveInterval() {
-        return channelNotActiveInterval;
-    }
-
-    public void setChannelNotActiveInterval(long channelNotActiveInterval) {
-        this.channelNotActiveInterval = channelNotActiveInterval;
-    }
-
-    public int getClientChannelMaxIdleTimeSeconds() {
-        return clientChannelMaxIdleTimeSeconds;
-    }
-
-    public void setClientChannelMaxIdleTimeSeconds(int clientChannelMaxIdleTimeSeconds) {
-        this.clientChannelMaxIdleTimeSeconds = clientChannelMaxIdleTimeSeconds;
-    }
-
-    public int getClientSocketSndBufSize() {
-        return clientSocketSndBufSize;
-    }
-
-    public void setClientSocketSndBufSize(int clientSocketSndBufSize) {
-        this.clientSocketSndBufSize = clientSocketSndBufSize;
-    }
-
-    public int getClientSocketRcvBufSize() {
-        return clientSocketRcvBufSize;
-    }
-
-    public void setClientSocketRcvBufSize(int clientSocketRcvBufSize) {
-        this.clientSocketRcvBufSize = clientSocketRcvBufSize;
-    }
-
-    public int getQueueCapacity() {
-        return queueCapacity;
-    }
-
-    public void setQueueCapacity(int queueCapacity) {
-        this.queueCapacity = queueCapacity;
-    }
-
-    public boolean isUseTLS() {
-        return useTLS;
-    }
-
-    public void setUseTLS(boolean useTLS) {
-        this.useTLS = useTLS;
-    }
-
-    public String getTlsFile() {
-        return tlsFile;
-    }
-
-    public void setTlsFile(String tlsFile) {
-        this.tlsFile = tlsFile;
-    }
 
     @Override
     public String toString() {
