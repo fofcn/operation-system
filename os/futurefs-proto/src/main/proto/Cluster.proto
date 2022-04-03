@@ -52,11 +52,12 @@ message ReplicateRequest {
 /**
  * 复制数据请求
  */
-message ReplicateDataRequest {
+message ReplicateReply {
+  bool exists = 1; // 是否有数据，true:有，false：无
   int32 peerId = 2; // master id
   int64 offset = 3; // master同步写入偏移
   int32 syncLength = 4; // 本次同步块长度
-  bytes content = 5; // 本次同步内容
+  optional bytes content = 5; // 本次同步内容
 }
 
 
