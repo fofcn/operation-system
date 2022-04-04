@@ -1,10 +1,16 @@
 package com.github.futurefs.store.distributed.masterslave.longpoll;
 
+import com.github.futurefs.netty.thread.PoolHelper;
 import com.github.futurefs.netty.util.NetworkUtil;
 import com.github.futurefs.store.block.BlockFile;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 长轮询
@@ -34,39 +40,58 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author errorfatal89@gmail.com
  * @datetime 2022/04/02 23:18
  */
-public class LongPolling {
+@Slf4j
+public class LongPolling<Data, Args> {
 
+    /**
+     * 长轮询客户端
+     */
     private final ConcurrentHashMap<String, LongPollingClient> clientTable = new ConcurrentHashMap<>(4);
 
-    private final BlockFile blockFile;
+    /**
+     * 定时器，定时扫描客户端是否超时，超时则回调客户端回调函数
+     */
+    private final ScheduledThreadPoolExecutor scanTimer = PoolHelper.newScheduledExecutor("longPolling", "longPolling-", 1);
 
     /**
      * 增加轮询
-     * @param ctx 客户端上下文
-     * @param offset 请求偏移
+     * @param id 客户端上下文
+     * @param callback 请求偏移
+     * @param args 请求偏移
      */
-    public boolean poll(ChannelHandlerContext ctx, long offset) {
-        // 先检查写入偏移是否已经有文件偏移更新，如果更新则不处理，返回false
-        if (blockFile.getWritePos() > offset) {
-            return false;
-        }
-
+    public boolean poll(String id, LongPollCallback<Data, Args> callback, Args args) {
         // 添加客户端到长轮询表中
-        String address = NetworkUtil.parseChannelRemoteAddr(ctx.channel());
-        LongPollingClient longPollingClient = new LongPollingClient();
-        longPollingClient.setCtx(ctx);
-        longPollingClient.setOffset(offset);
-        clientTable.putIfAbsent(address, longPollingClient);
+        LongPollingClient longPollingClient = new LongPollingClient(callback, args);
+        clientTable.putIfAbsent(id, longPollingClient);
         return true;
     }
 
-    public void notifyWrite(Object data) {
-        // 检查所有等待的请求列表
-        // 如果满足了需求则调用客户端发送请求数据
+    public void notifyWrite(Data data) {
+        Iterator<Map.Entry<String, LongPollingClient>> iterator = clientTable.entrySet().iterator();
+        while (iterator.hasNext()) {
+            LongPollingClient client = iterator.next().getValue();
+            client.getCallback().onNewData(data, client.getArgs());
+        }
     }
 
     public void scan() {
         // 扫描所有过期的请求
-        // 调用客户端回调
+        scanTimer.scheduleAtFixedRate(() -> {
+            if (clientTable.isEmpty()) {
+                return;
+            }
+
+            Iterator<Map.Entry<String, LongPollingClient>> iterator = clientTable.entrySet().iterator();
+            while (iterator.hasNext()) {
+                LongPollingClient client = iterator.next().getValue();
+                long period = System.currentTimeMillis() - client.getTime();
+                if (period >= 30L * 1000 * 2) {
+                    client.getCallback().onTimeout(client.getArgs());
+                    log.info("client <{}> wait timeout, remove it.", iterator.next().getKey());
+                    iterator.remove();
+                }
+            }
+
+        }, 30L, 30L, TimeUnit.SECONDS);
     }
 }

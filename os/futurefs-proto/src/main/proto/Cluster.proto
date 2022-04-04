@@ -9,13 +9,13 @@ message ClusterRequest {
   oneof Request {
       PingRequest pingRequest  = 1;
       ReplicateRequest replicateRequest = 2;
-      ReplicateDataRequest dataRequest = 3;
   }
 }
 
 message ClusterReply {
   oneof Reply {
     PingReply pingReply = 1;
+    ReplicateReply replicateReply = 2;
   }
 }
 
@@ -57,7 +57,7 @@ message ReplicateReply {
   int32 peerId = 2; // master id
   int64 offset = 3; // master同步写入偏移
   int32 syncLength = 4; // 本次同步块长度
-  optional bytes content = 5; // 本次同步内容
+  bytes content = 5; // 本次同步内容
 }
 
 

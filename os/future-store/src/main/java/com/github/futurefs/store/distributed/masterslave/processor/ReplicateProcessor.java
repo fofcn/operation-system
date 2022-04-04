@@ -6,8 +6,10 @@ import com.github.futurefs.netty.enums.ResponseCode;
 import com.github.futurefs.netty.netty.NetworkCommand;
 import com.github.futurefs.netty.processor.NettyRequestProcessor;
 import com.github.futurefs.store.block.BlockFile;
+import com.github.futurefs.store.distributed.masterslave.LongPollArgs;
+import com.github.futurefs.store.distributed.masterslave.MasterSlaveLongPollCallback;
+import com.github.futurefs.store.distributed.masterslave.longpoll.LongPollCallback;
 import com.github.futurefs.store.distributed.masterslave.longpoll.LongPolling;
-import com.github.futurefs.store.rpc.RpcClient;
 import com.google.protobuf.ByteString;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +27,14 @@ public class ReplicateProcessor implements NettyRequestProcessor {
 
     private final BlockFile blockFile;
 
-    private final RpcClient rpcClient;
-
     private final int peerId;
 
     private final LongPolling longPolling;
 
-    public ReplicateProcessor(BlockFile blockFile, RpcClient rpcClient,
-                              int peerId, final LongPolling longPolling) {
+    public ReplicateProcessor(final BlockFile blockFile,
+                              final int peerId,
+                              final LongPolling longPolling) {
         this.blockFile = blockFile;
-        this.rpcClient = rpcClient;
         this.peerId = peerId;
         this.longPolling = longPolling;
     }
@@ -49,8 +49,10 @@ public class ReplicateProcessor implements NettyRequestProcessor {
         if (diff < 1024 * 1024) {
             length = diff;
         } else if (diff == 0) {
-            // 放到长轮询中，直接返回null对象
-            longPolling.poll(ctx, req.getOffset());
+            LongPollArgs lpArgs = new LongPollArgs(ctx, req.getOffset(), blockFile);
+            LongPollCallback lpCallback = new MasterSlaveLongPollCallback(peerId);
+            longPolling.poll(String.valueOf(req.getPeerId()),
+                    lpCallback, lpArgs);
             return null;
         } else {
             log.error("slave offset errors");
@@ -58,21 +60,21 @@ public class ReplicateProcessor implements NettyRequestProcessor {
 
         ByteBuffer buffer = blockFile.read(req.getOffset(), (int) length);
         // 组装请求
-        ClusterProtos.ReplicateDataRequest dataRequest =
-                ClusterProtos.ReplicateDataRequest.newBuilder()
+        ClusterProtos.ReplicateReply dataReply =
+                ClusterProtos.ReplicateReply.newBuilder()
+                .setExists(true)
                 .setOffset(req.getOffset())
                 .setPeerId(peerId)
                 .setSyncLength((int) length)
                 .setContent(ByteString.copyFrom(buffer.array()))
                 .build();
-        ClusterProtos.ClusterRequest clusterRequest = ClusterProtos.ClusterRequest.newBuilder()
-                .setDataRequest(dataRequest)
+        ClusterProtos.ClusterReply clusterReply = ClusterProtos.ClusterReply.newBuilder()
+                .setReplicateReply(dataReply)
                 .build();
-        NettyProtos.NettyRequest replicateData = NettyProtos.NettyRequest.newBuilder()
-                .setClusterRequest(clusterRequest)
+        NettyProtos.NettyReply reply = NettyProtos.NettyReply.newBuilder()
+                .setClusterReply(clusterReply)
                 .build();
-//        rpcClient.callOneWay(RequestCode.REPLICATE_DATA, replicateData);
 
-        return NetworkCommand.createResponseCommand(ResponseCode.SUCCESS.getCode(), replicateData.toByteArray());
+        return NetworkCommand.createResponseCommand(ResponseCode.SUCCESS.getCode(), reply.toByteArray());
     }
 }

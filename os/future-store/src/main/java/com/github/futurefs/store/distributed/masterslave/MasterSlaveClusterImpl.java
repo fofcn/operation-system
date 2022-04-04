@@ -13,6 +13,9 @@ import com.github.futurefs.store.common.constant.StoreConstant;
 import com.github.futurefs.store.distributed.ClusterConfig;
 import com.github.futurefs.store.distributed.ClusterManager;
 import com.github.futurefs.store.distributed.ClusterMode;
+import com.github.futurefs.store.distributed.masterslave.longpoll.LongPolling;
+import com.github.futurefs.store.distributed.masterslave.processor.PingProcessor;
+import com.github.futurefs.store.distributed.masterslave.processor.ReplicateProcessor;
 import com.github.futurefs.store.pubsub.Broker;
 import com.github.futurefs.store.rpc.RpcClient;
 import com.github.futurefs.store.rpc.RpcServer;
@@ -56,6 +59,8 @@ public class MasterSlaveClusterImpl implements ClusterManager {
 
     private final AtomicInteger timeoutCounter = new AtomicInteger(0);
 
+    private final LongPolling<LongPollData, LongPollArgs> longPolling;
+
     public MasterSlaveClusterImpl(final ClusterConfig clusterConfig, final NettyClientConfig nettyClientConfig, final Broker broker, final BlockFile blockFile) {
         this.clusterConfig = clusterConfig;
         this.broker = broker;
@@ -76,6 +81,8 @@ public class MasterSlaveClusterImpl implements ClusterManager {
         parsePeer();
 
         this.rpcClient = new RpcClient(nettyClientConfig, 1, new ArrayList<>(peerTable.values()));
+
+        this.longPolling = new LongPolling();
     }
 
     @Override
@@ -91,9 +98,13 @@ public class MasterSlaveClusterImpl implements ClusterManager {
     @Override
     public boolean init() {
         rpcServer.init();
+        rpcServer.registerProcessor(RequestCode.PING, new PingProcessor(this, blockFile));
+        rpcServer.registerProcessor(RequestCode.REPLICATE, new ReplicateProcessor(blockFile, clusterConfig.getPeerId(),
+                longPolling));
 
         // 文件新增消费者，监听文件新增以满足长轮询
-        broker.registerConsumer();
+        broker.registerConsumer(StoreConstant.BLOCK_TOPIC_NAME, new ClusterConsumer(blockFile, longPolling));
+
 
         // 启动ping定时任务
         timerExecutor.scheduleAtFixedRate(() -> {

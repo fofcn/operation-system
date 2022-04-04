@@ -1,6 +1,5 @@
 package com.github.futurefs.store.distributed.masterslave.longpoll;
 
-import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 
 /**
@@ -14,15 +13,20 @@ public class LongPollingClient {
     /**
      * 加入时间
      */
-    private long time = System.currentTimeMillis();
+    private final long time = System.currentTimeMillis();
 
     /**
-     * 请求偏移
+     * 事件回调
      */
-    private long offset;
+    private final LongPollCallback callback;
 
     /**
-     * 请求上下文
+     * 客户端参数
      */
-    private ChannelHandlerContext ctx;
+    private final Object args;
+
+    public LongPollingClient(LongPollCallback callback, Object args) {
+        this.callback = callback;
+        this.args = args;
+    }
 }
