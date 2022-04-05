@@ -166,6 +166,40 @@ public class BaseFile {
     }
 
     /**
+     * 指定偏移追加文件
+     * @param buffer 内容
+     * @param offset 偏移
+     * @return 追加结果
+     */
+    public R<AppendResult> append(long offset, ByteBuffer buffer) {
+        AppendResult appendResult = new AppendResult();
+        if (readWriteLock.writeLock().tryLock()) {
+            int length = buffer.limit();
+            padding(length);
+
+            long pos;
+            try {
+                pos = offset;
+                // 写入数据内容
+                fileChannel.write(buffer, pos);
+                pos = writePos.addAndGet(offset);
+                doAfterAppend(pos, length);
+            } catch (IOException e) {
+                log.error("write file error.", e);
+                return RWrapper.fail();
+            } finally {
+                readWriteLock.writeLock().unlock();
+            }
+
+            appendResult.setOffset(pos);
+            return RWrapper.success(appendResult);
+        }
+
+        log.error("acquire write lock error");
+        return RWrapper.fail();
+    }
+
+    /**
      * 读取文件
      * @param pos 读取偏移
      * @param length 读取长度

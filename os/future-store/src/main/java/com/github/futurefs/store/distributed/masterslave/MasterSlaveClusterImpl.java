@@ -1,14 +1,20 @@
 package com.github.futurefs.store.distributed.masterslave;
 
 import com.github.futurefs.netty.ClusterProtos;
+import com.github.futurefs.netty.ClusterProtos.ClusterRequest;
+import com.github.futurefs.netty.ClusterProtos.PingRequest;
+import com.github.futurefs.netty.ClusterProtos.ReplicateReply;
 import com.github.futurefs.netty.EnumUtil;
 import com.github.futurefs.netty.NettyProtos;
 import com.github.futurefs.netty.NettyProtos.NettyReply;
+import com.github.futurefs.netty.R;
+import com.github.futurefs.netty.RWrapper;
 import com.github.futurefs.netty.config.NettyClientConfig;
 import com.github.futurefs.netty.exception.TrickyFsException;
 import com.github.futurefs.netty.network.RequestCode;
 import com.github.futurefs.netty.thread.PoolHelper;
 import com.github.futurefs.store.block.BlockFile;
+import com.github.futurefs.store.common.AppendResult;
 import com.github.futurefs.store.common.constant.StoreConstant;
 import com.github.futurefs.store.distributed.ClusterConfig;
 import com.github.futurefs.store.distributed.ClusterManager;
@@ -20,6 +26,7 @@ import com.github.futurefs.store.pubsub.Broker;
 import com.github.futurefs.store.rpc.RpcClient;
 import com.github.futurefs.store.rpc.RpcServer;
 import com.github.futurefs.store.rpc.RpcServerFactoryImpl;
+import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -40,6 +48,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MasterSlaveClusterImpl implements ClusterManager {
 
     private final ScheduledThreadPoolExecutor timerExecutor = PoolHelper.newScheduledExecutor("masterSlave", "master-slave-", 1);
+
+    private final ThreadPoolExecutor replicatePool = PoolHelper.newSingleThreadPool("masterSlaveReplicate", "masterSlaveReplicate", 1024);
 
     private final ClusterConfig clusterConfig;
 
@@ -61,6 +71,8 @@ public class MasterSlaveClusterImpl implements ClusterManager {
 
     private final LongPolling<LongPollData, LongPollArgs> longPolling;
 
+    private volatile boolean isReplicateStart = true;
+
     public MasterSlaveClusterImpl(final ClusterConfig clusterConfig, final NettyClientConfig nettyClientConfig, final Broker broker, final BlockFile blockFile) {
         this.clusterConfig = clusterConfig;
         this.broker = broker;
@@ -80,6 +92,8 @@ public class MasterSlaveClusterImpl implements ClusterManager {
 
         parsePeer();
 
+        // 超时时间需要是长轮询的三倍 + C 秒
+        nettyClientConfig.setConnectTimeoutMillis(190 * 1000);
         this.rpcClient = new RpcClient(nettyClientConfig, 1, new ArrayList<>(peerTable.values()));
 
         this.longPolling = new LongPolling();
@@ -105,30 +119,31 @@ public class MasterSlaveClusterImpl implements ClusterManager {
         // 文件新增消费者，监听文件新增以满足长轮询
         broker.registerConsumer(StoreConstant.BLOCK_TOPIC_NAME, new ClusterConsumer(blockFile, longPolling));
 
-
         // 启动ping定时任务
         timerExecutor.scheduleAtFixedRate(() -> {
-            if (masterSlaveRole.equals(MasterSlaveRole.SLAVE)) {
-                // 组装请求
-                ClusterProtos.PingRequest pingReq = ClusterProtos.PingRequest.newBuilder()
-                        .setPeerId(clusterConfig.getPeerId())
-                        .setTotalSpace(0)
-                        .setUsedSpace(0)
-                        .setFreeSpace(0)
-                        .setCanWrite(true)
-                        .build();
-                ClusterProtos.ClusterRequest clusterRequest = ClusterProtos.ClusterRequest.newBuilder()
-                        .setPingRequest(pingReq).build();
-                NettyProtos.NettyRequest request = NettyProtos.NettyRequest.newBuilder()
-                        .setClusterRequest(clusterRequest)
-                        .build();
-                List<NettyReply> replyList = rpcClient.callSync(RequestCode.PING, request);
-                replyList.forEach(reply -> {
+            try {
+                if (masterSlaveRole.equals(MasterSlaveRole.SLAVE)) {
+                    // 组装请求
+                    PingRequest pingReq = PingRequest.newBuilder()
+                            .setPeerId(clusterConfig.getPeerId())
+                            .setTotalSpace(0)
+                            .setUsedSpace(0)
+                            .setFreeSpace(0)
+                            .setCanWrite(true)
+                            .build();
+                    ClusterRequest clusterRequest = ClusterRequest.newBuilder()
+                            .setPingRequest(pingReq).build();
+                    NettyProtos.NettyRequest request = NettyProtos.NettyRequest.newBuilder()
+                            .setClusterRequest(clusterRequest)
+                            .build();
+                    NettyReply reply = rpcClient.callSync(RequestCode.PING, request);
                     ClusterProtos.PingReply pingReply = reply.getClusterReply().getPingReply();
                     if (!pingReply.getSuccess()) {
                         log.error("master error");
                     }
-                });
+                }
+            } catch (Exception e) {
+                log.error("heart beat error", e);
             }
         }, 0L, 500L, TimeUnit.MILLISECONDS);
         return true;
@@ -137,10 +152,13 @@ public class MasterSlaveClusterImpl implements ClusterManager {
     @Override
     public void start() {
         rpcServer.start();
+        // 启动复制
+        startReplicate();
     }
 
     @Override
     public void shutdown() {
+        isReplicateStart = false;
         rpcServer.shutdown();
     }
 
@@ -164,30 +182,38 @@ public class MasterSlaveClusterImpl implements ClusterManager {
 
     /**
      * 发送同步请求
-     * @param masterWritePos
-     * @param writePos
      */
-    private void sendSyncRequest(long masterWritePos, long writePos) {
-        // 计算master 写入和自身的写入偏移差异
-        if (masterWritePos - writePos > 0) {
-            // 偏移大于0就开始同步
-            ClusterProtos.ReplicateRequest replicateRequest = ClusterProtos.ReplicateRequest.newBuilder()
-                    .setOffset(writePos)
-                    .setPeerId(clusterConfig.getPeerId())
-                    .build();
-            ClusterProtos.ClusterRequest clusterRequest = ClusterProtos.ClusterRequest.newBuilder()
-                    .setReplicateRequest(replicateRequest)
-                    .build();
-            NettyProtos.NettyRequest request = NettyProtos.NettyRequest.newBuilder()
-                    .setClusterRequest(clusterRequest)
-                    .build();
+    private void startReplicate() {
+        replicatePool.execute(() -> {
+            while (isReplicateStart) {
+                // 偏移大于0就开始同步
+                ClusterProtos.ReplicateRequest replicateRequest = ClusterProtos.ReplicateRequest.newBuilder()
+                        .setOffset(blockFile.getWritePos())
+                        .setPeerId(clusterConfig.getPeerId())
+                        .build();
+                ClusterProtos.ClusterRequest clusterRequest = ClusterProtos.ClusterRequest.newBuilder()
+                        .setReplicateRequest(replicateRequest)
+                        .build();
+                NettyProtos.NettyRequest request = NettyProtos.NettyRequest.newBuilder()
+                        .setClusterRequest(clusterRequest)
+                        .build();
 
-            try {
-                rpcClient.callOneWay(RequestCode.REPLICATE, request);
-            } catch (TrickyFsException e) {
-                e.printStackTrace();
+                try {
+                    NettyReply replicateReply = rpcClient.callSync(RequestCode.REPLICATE, request);
+                    ClusterProtos.ReplicateReply replicateData = replicateReply.getClusterReply().getReplicateReply();
+                    if (replicateData.getExists()) {
+                        // 存在文件数据更新，则将数据文件写入到block file中
+                        ByteString content = replicateData.getContent();
+                        long offset = replicateData.getOffset();
+                        R<AppendResult> r = blockFile.append(offset, content.asReadOnlyByteBuffer());
+                        if (RWrapper.isFailed(r)) {
+                            log.error("replicate and write block file error");
+                        }
+                    }
+                } catch (TrickyFsException e) {
+                    log.error("replicate error", e);
+                }
             }
-        }
-
+        });
     }
 }

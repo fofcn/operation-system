@@ -61,22 +61,25 @@ public class RpcClient {
      * @param request 请求
      * @return 结果
      */
-    public List<NettyProtos.NettyReply> callSync(int requestCode, NettyProtos.NettyRequest request) {
+    public NettyProtos.NettyReply callSync(int requestCode, NettyProtos.NettyRequest request) throws TrickyFsException {
         NetworkCommand networkCommand = NetworkCommand.createRequestCommand(requestCode, request.toByteArray());
-        List<Callable<NettyProtos.NettyReply>> callableList = new ArrayList<>(peers.size());
-        peers.forEach(address -> {
-            callableList.add(() -> {
-                NetworkCommand response = networkClient.sendSync(address, networkCommand, waitMillis);
-                if (NetworkCommand.isResponseOk(response)) {
-                    return NettyProtos.NettyReply.parseFrom(response.getBody());
-                }
+        if (peers.size() == 1) {
+            try {
+                networkClient.sendSync(peers.get(0), networkCommand, waitMillis);
+            } catch (NetworkConnectException e) {
+                throw new TrickyFsException(e);
+            } catch (NetworkSendRequestException e) {
+                throw new TrickyFsException(e);
+            } catch (InterruptedException e) {
+                throw new TrickyFsException(e);
+            } catch (NetworkTimeoutException e) {
+                throw new TrickyFsException(e);
+            }
+        }
 
-                return null;
-            });
-        });
-
-        return parallelTask(callableList, waitMillis);
+        throw new TrickyFsException("multi-peers exists");
     }
+
 
     /**
      * 同步调用

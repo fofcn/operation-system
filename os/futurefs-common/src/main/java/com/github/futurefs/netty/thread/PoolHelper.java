@@ -53,4 +53,22 @@ public class PoolHelper {
         return new ThreadPoolExecutor(coreSize, coreSize, 60L, TimeUnit.SECONDS, new ArrayBlockingQueue<>(queueSize), r -> new Thread(r, threadName + "-" + finalIdx.get()),
                 new ThreadPoolExecutor.AbortPolicy());
     }
+
+    /**
+     * 新建单线程线程池
+     * @param module 模块名称
+     * @param threadName 线程名
+     * @param queueSize 队列大小
+     * @return 定时器线程池
+     */
+    public static ThreadPoolExecutor newSingleThreadPool(String module, String threadName, int queueSize) {
+        AtomicInteger idx = moduleThreadIdxTable.get(module);
+        if (idx == null) {
+            idx = new AtomicInteger(0);
+        }
+
+        AtomicInteger finalIdx = idx;
+        return new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, new ArrayBlockingQueue<>(queueSize), r -> new Thread(r, threadName + "-" + finalIdx.get()),
+                new ThreadPoolExecutor.AbortPolicy());
+    }
 }

@@ -10,4 +10,8 @@ public class TrickyFsException extends Exception {
     public TrickyFsException(Exception e) {
         super(e);
     }
+
+    public TrickyFsException(String msg) {
+        super(msg);
+    }
 }
