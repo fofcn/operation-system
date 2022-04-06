@@ -1,5 +1,7 @@
 package com.github.futurefs.client.api;
 
+import com.github.futurefs.netty.exception.TrickyFsNetworkException;
+
 import java.io.File;
 import java.io.InputStream;
 
@@ -17,7 +19,7 @@ public interface TrickyClient {
      * @param content 文件内容
      * @return
      */
-    ApiResult write(String bucket, byte[] content);
+    ApiResult write(String bucket, byte[] content) throws TrickyFsNetworkException;
 
     /**
      * 写入文件

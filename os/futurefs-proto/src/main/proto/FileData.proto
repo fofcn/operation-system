@@ -7,12 +7,12 @@ package proto.file;
 
 message FileRequest {
   int64 length = 1;
-  int64 offset = 2;
-  bytes data = 3;
+  bytes data = 2;
 }
 
 message FileReply {
-  int64 key = 1;
+  bool success = 1;
+  int64 key = 2;
 }
 
 

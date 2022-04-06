@@ -60,22 +60,24 @@ public class PubSubRelation {
     });
 
     public void deliver() {
-        Message msg = null;
-        while (start.get()) {
-            try {
-                if ((msg = messageQueue.take()) != null) {
-                    Message finalMsg = msg;
-                    consumerList.forEach(consumer -> {
-                        deliverPool.execute(() -> {
-                            consumer.consume(finalMsg);
+        deliverPool.execute(() -> {
+            Message msg = null;
+            while (start.get()) {
+                try {
+                    if ((msg = messageQueue.take()) != null) {
+                        Message finalMsg = msg;
+                        consumerList.forEach(consumer -> {
+                            deliverPool.execute(() -> {
+                                consumer.consume(finalMsg);
+                            });
                         });
-                    });
+                    }
+                } catch (InterruptedException e) {
+                    log.error("", e);
                 }
-            } catch (InterruptedException e) {
-                log.error("", e);
-            }
 
-        }
+            }
+        });
     }
 
     public void stop() {

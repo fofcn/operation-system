@@ -3,6 +3,7 @@ trickyfs:
   blockPath: trickyfs/block
   # 索引存储目录
   indexPath: trickyfs/index
+  # bucket服务
   buckets: trickyfs-a
   # TCP服务端配置
   serverConfig:
@@ -50,7 +51,7 @@ trickyfs:
         tlsFile:
       rpcServerConfig:
         host: 127.0.0.1
-        listenPort: 60000
+        listenPort: 60001
         serverWorkerThreads: 8
         serverSelectorThreads: 3
         serverChannelMaxIdleTimeSeconds: 120

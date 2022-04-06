@@ -1,6 +1,10 @@
 package com.github.futurefs.store.network;
 
-import com.github.futurefs.netty.NettyProtos;
+import com.github.futurefs.netty.FileDataProtos;
+import com.github.futurefs.netty.FileDataProtos.FileReply;
+import com.github.futurefs.netty.NettyProtos.NettyReply ;
+import com.github.futurefs.netty.NettyProtos.NettyRequest;
+import com.github.futurefs.netty.enums.ResponseCode;
 import com.github.futurefs.netty.netty.NetworkCommand;
 import com.github.futurefs.netty.processor.NettyRequestProcessor;
 import com.github.futurefs.store.block.BlockFile;
@@ -30,8 +34,8 @@ public class FileDataProcessor implements NettyRequestProcessor {
 
     @Override
     public NetworkCommand processRequest(ChannelHandlerContext ctx, NetworkCommand request) throws Exception {
-        NettyProtos.NettyRequest body = NettyProtos.NettyRequest.parseFrom(request.getBody());
-        if (NettyProtos.NettyRequest.RequestCase.FILEREQUEST.equals(body.getRequestCase())) {
+        NettyRequest body = NettyRequest.parseFrom(request.getBody());
+        if (NettyRequest.RequestCase.FILEREQUEST.equals(body.getRequestCase())) {
             log.info("file upload request..");
         }
 
@@ -46,7 +50,19 @@ public class FileDataProcessor implements NettyRequestProcessor {
         fileBlock.setBody(body.getFileRequest().getData().toByteArray());
         fileBlock.setTailor(tailor);
         AppendResult result = fileData.append(fileBlock);
+        FileReply fileReply;
+        if (result.getOffset() != -1L) {
+            fileReply = FileReply.newBuilder()
+                    .setSuccess(true)
+                    .setKey(header.getKey())
+                    .build();
+        } else {
+            fileReply = FileReply.newBuilder()
+                    .setSuccess(false)
+                    .build();
+        }
 
-        return null;
+        NettyReply reply = NettyReply.newBuilder().setFileReply(fileReply).build();
+        return NetworkCommand.createResponseCommand(ResponseCode.SUCCESS.getCode(), reply.toByteArray());
     }
 }

@@ -211,6 +211,7 @@ public class BaseFile {
             try {
                 fileChannel.position(pos);
                 fileChannel.read(buffer);
+                buffer.flip();
                 return buffer;
             } catch (IOException e) {
                 log.error("io error", e);

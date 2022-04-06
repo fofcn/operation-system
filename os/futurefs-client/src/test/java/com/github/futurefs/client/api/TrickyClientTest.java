@@ -2,6 +2,8 @@ package com.github.futurefs.client.api;
 
 import com.github.futurefs.client.api.config.ClientConfig;
 import com.github.futurefs.netty.config.NettyClientConfig;
+import com.github.futurefs.netty.exception.TrickyFsNetworkException;
+import com.github.futurefs.netty.thread.PoolHelper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 客户端测试类
@@ -24,6 +28,8 @@ public class TrickyClientTest {
     private static TrickyClient trickyClient;
 
     private static ClientManager clientManager;
+
+    private static final ThreadPoolExecutor testPool = PoolHelper.newFixedPool("", "", 4, 1024000);
 
     @BeforeClass
     public static void beforeClass() {
@@ -45,14 +51,24 @@ public class TrickyClientTest {
     }
 
     @Test
-    public void testWrite() throws IOException {
+    public void testWrite() throws IOException, TrickyFsNetworkException, InterruptedException {
         File file = new File("G:\\github.com\\html-exporter-master.zip");
         InputStream in = new FileInputStream(file);
         byte[] content = new byte[in.available()];
         in.read(content);
-        ApiResult<Long> fileKey = trickyClient.write("", content);
-        if (ApiResultWrapper.isSuccess(fileKey)) {
-            System.out.println(fileKey.getData());
+        for (int i = 0; i < 1000000; i++) {
+            testPool.execute(() -> {
+                ApiResult<Long> fileKey = null;
+                try {
+                    fileKey = trickyClient.write("", content);
+                    if (ApiResultWrapper.isSuccess(fileKey)) {
+                        System.out.println(fileKey.getData());
+                    }
+                } catch (TrickyFsNetworkException e) {
+                    e.printStackTrace();
+                }
+            });
         }
+        testPool.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS);
     }
 }
