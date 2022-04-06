@@ -1,6 +1,7 @@
 package com.github.futurefs.store.distributed;
 
 import com.github.futurefs.store.block.BlockFile;
+import com.github.futurefs.store.config.ClusterConfig;
 import com.github.futurefs.store.distributed.masterslave.MasterSlaveClusterImpl;
 import com.github.futurefs.store.pubsub.Broker;
 
@@ -14,7 +15,7 @@ public class DefaultClusterFactory implements ClusterFactory {
 
     @Override
     public ClusterManager getCluster(ClusterConfig clusterConfig, Broker broker, BlockFile blockFile) {
-        ClusterMode clusterMode = ClusterMode.getByCode(clusterConfig.getClusterMode());
+        ClusterMode clusterMode = ClusterMode.getByCode(clusterConfig.getMode());
         if (clusterMode.equals(ClusterMode.INVALID_CLUSTER)) {
             return null;
         }

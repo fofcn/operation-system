@@ -31,7 +31,16 @@ public class RpcClientConfig {
     private String tlsFile;
 
     public NettyClientConfig toNettyClientConfig() {
-        // todo 拷贝属性
-        return new NettyClientConfig();
+        NettyClientConfig clientConfig = new NettyClientConfig();
+        clientConfig.setConnectTimeoutMillis(connectTimeoutMillis);
+        clientConfig.setChannelNotActiveInterval(channelNotActiveInterval);
+        clientConfig.setClientChannelMaxIdleTimeSeconds(clientChannelMaxIdleTimeSeconds);
+        clientConfig.setClientSocketRcvBufSize(clientSocketRcvBufSize);
+        clientConfig.setClientSocketSndBufSize(clientSocketSndBufSize);
+        clientConfig.setClientWorkerThreads(clientWorkerThreads);
+        clientConfig.setQueueCapacity(queueCapacity);
+        clientConfig.setUseTLS(useTLS);
+        clientConfig.setTlsFile(tlsFile);
+        return clientConfig;
     }
 }

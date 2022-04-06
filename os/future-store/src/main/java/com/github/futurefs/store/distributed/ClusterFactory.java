@@ -1,6 +1,7 @@
 package com.github.futurefs.store.distributed;
 
 import com.github.futurefs.store.block.BlockFile;
+import com.github.futurefs.store.config.ClusterConfig;
 import com.github.futurefs.store.pubsub.Broker;
 
 /**

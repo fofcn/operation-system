@@ -3,7 +3,6 @@ package com.github.futurefs.store.distributed.masterslave;
 import com.github.futurefs.netty.ClusterProtos;
 import com.github.futurefs.netty.ClusterProtos.ClusterRequest;
 import com.github.futurefs.netty.ClusterProtos.PingRequest;
-import com.github.futurefs.netty.ClusterProtos.ReplicateReply;
 import com.github.futurefs.netty.EnumUtil;
 import com.github.futurefs.netty.NettyProtos;
 import com.github.futurefs.netty.NettyProtos.NettyReply;
@@ -16,7 +15,7 @@ import com.github.futurefs.netty.thread.PoolHelper;
 import com.github.futurefs.store.block.BlockFile;
 import com.github.futurefs.store.common.AppendResult;
 import com.github.futurefs.store.common.constant.StoreConstant;
-import com.github.futurefs.store.distributed.ClusterConfig;
+import com.github.futurefs.store.config.ClusterConfig;
 import com.github.futurefs.store.distributed.ClusterManager;
 import com.github.futurefs.store.distributed.ClusterMode;
 import com.github.futurefs.store.distributed.masterslave.longpoll.LongPolling;
@@ -28,6 +27,7 @@ import com.github.futurefs.store.rpc.RpcServer;
 import com.github.futurefs.store.rpc.RpcServerFactoryImpl;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -78,9 +78,9 @@ public class MasterSlaveClusterImpl implements ClusterManager {
         this.broker = broker;
         this.blockFile = blockFile;
         this.rpcServer = new RpcServerFactoryImpl().getRpcServer(clusterConfig.getRpcConfig());
-        ClusterMode confMode = ClusterMode.getByCode(clusterConfig.getClusterMode());
+        ClusterMode confMode = ClusterMode.getByCode(clusterConfig.getMode());
         if (confMode.equals(ClusterMode.INVALID_CLUSTER)) {
-            throw new IllegalArgumentException("invalid cluster configuration: " + clusterConfig.getClusterMode());
+            throw new IllegalArgumentException("invalid cluster configuration: " + clusterConfig.getMode());
         }
         this.clusterMode = confMode;
 
@@ -167,18 +167,20 @@ public class MasterSlaveClusterImpl implements ClusterManager {
      * 解析对等配置
      */
     private void parsePeer() {
-        List<String> peerList = clusterConfig.getPeerList();
-        peerList.forEach(peer -> {
-            if (StringUtils.isNotEmpty(peer)) {
-                String[] peerParts = peer.split(":");
-                if (peerParts.length != 3) {
-                    log.error("peer config error, config:<{}>", peer);
-                    return;
-                }
+        List<String> peerList = clusterConfig.getPeers();
+        if (CollectionUtils.isNotEmpty(peerList)) {
+            peerList.forEach(peer -> {
+                if (StringUtils.isNotEmpty(peer)) {
+                    String[] peerParts = peer.split(":");
+                    if (peerParts.length != 3) {
+                        log.error("peer config error, config:<{}>", peer);
+                        return;
+                    }
 
-                peerTable.put(Integer.parseInt(peerParts[0]), peerParts[1] + ":" + peerParts[2]);
-            }
-        });
+                    peerTable.put(Integer.parseInt(peerParts[0]), peerParts[1] + ":" + peerParts[2]);
+                }
+            });
+        }
     }
 
     /**

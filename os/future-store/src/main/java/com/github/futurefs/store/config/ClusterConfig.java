@@ -1,5 +1,7 @@
 package com.github.futurefs.store.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.futurefs.store.rpc.config.RpcConfig;
 import lombok.Data;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
  * @datetime 2022/03/31 14:17
  */
 @Data
-public class StoreClusterConfig {
+public class ClusterConfig {
 
     /**
      * 集群模式
@@ -19,25 +21,33 @@ public class StoreClusterConfig {
      * LEADER-FOLLOWER-LEARNER
      * LEADER-FOLLOWER-CANDIDATE
      */
-    private String mode;
+    @JsonProperty
+    private int mode;
 
     /**
      * 对等端Id
      */
+    @JsonProperty
     private int peerId;
 
     /**
      * 角色
      */
-    private String role;
+    @JsonProperty
+    private int role;
 
     /**
      * 地址
      */
+    @JsonProperty
     private String address;
 
     /**
      * 其他节点地址
      */
-    private List<String> nodes;
+    @JsonProperty(required = false)
+    private List<String> peers;
+
+    @JsonProperty(required = false)
+    private RpcConfig rpcConfig;
 }

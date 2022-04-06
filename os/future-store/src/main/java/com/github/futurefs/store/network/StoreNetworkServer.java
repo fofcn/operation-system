@@ -28,7 +28,7 @@ public class StoreNetworkServer {
     public boolean init() {
         server = new NettyNetworkServer(nettyServerConfig);
         server.registerProcessor(RequestCode.FILE_UPLOAD, new FileDataProcessor(blockFile), null);
-        server.registerProcessor(RequestCode.OFFSET_QUERY, new FileOffsetProcessor(blockFile.getPreAllocOffset()), null);
+//        server.registerProcessor(RequestCode.OFFSET_QUERY, new FileOffsetProcessor(blockFile.getPreAllocOffset()), null);
         return true;
     }
 

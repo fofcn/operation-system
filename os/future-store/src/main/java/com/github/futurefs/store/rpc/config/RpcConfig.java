@@ -3,7 +3,6 @@ package com.github.futurefs.store.rpc.config;
 import com.github.futurefs.netty.config.NettyClientConfig;
 import com.github.futurefs.netty.config.NettyServerConfig;
 import com.github.futurefs.store.rpc.RpcEnum;
-import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -13,7 +12,6 @@ import lombok.Data;
  * @datetime 2022/04/01
  */
 @Data
-@Builder
 public class RpcConfig {
 
     private RpcEnum rpcFramework;

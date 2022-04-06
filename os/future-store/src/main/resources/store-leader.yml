@@ -1,14 +1,8 @@
 trickyfs:
-  # 角色： LEADER/FOLLOWER
-  role: LEADER
-  # raft数据目录
-  raftDataPath: trickyfs/raft
   # 主存储目录
   blockPath: trickyfs/block
   # 索引存储目录
   indexPath: trickyfs/index
-  # bucket集群配置
-  bucketCluster: "127.0.01:61000;127.0.01:61001;127.0.01:61002"
   buckets: trickyfs-a
   # TCP服务端配置
   serverConfig:
@@ -33,12 +27,34 @@ trickyfs:
     useTLS: false
     tlsFile:
 
-  # 选举配置
+  # 集群配置
   clusterConfig:
     mode: 1
     peerId: 1
-    role: LEADER
+    role: 1
     address: 172.0.0.1:60001
-    nodes:
-      - 2:172.0.0.1:60002
-      - 3:172.0.0.1:60003
+#    peers:
+#      - 2:172.0.0.1:60002
+#      - 3:172.0.0.1:60003
+    rpcConfig:
+      rpcFramework: NETTY
+      rpcClientConfig:
+        clientWorkerThreads: 4
+        connectTimeoutMillis: 30000
+        channelNotActiveInterval: 60000
+        clientChannelMaxIdleTimeSeconds: 120
+        clientSocketSndBufSize: 65535
+        clientSocketRcvBufSize: 65535
+        queueCapacity: 1000
+        useTLS: false
+        tlsFile:
+      rpcServerConfig:
+        host: 127.0.0.1
+        listenPort: 60000
+        serverWorkerThreads: 8
+        serverSelectorThreads: 3
+        serverChannelMaxIdleTimeSeconds: 120
+        serverSocketSndBufSize: 65535
+        serverSocketRcvBufSize: 65535
+        useTLS: false
+        tlsFile:

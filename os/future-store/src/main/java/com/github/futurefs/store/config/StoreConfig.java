@@ -1,10 +1,8 @@
 package com.github.futurefs.store.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import com.github.futurefs.netty.config.NettyClientConfig;
 import com.github.futurefs.netty.config.NettyServerConfig;
-import com.github.futurefs.store.distributed.ClusterConfig;
 import lombok.Data;
 
 
@@ -16,11 +14,6 @@ import lombok.Data;
  */
 @Data
 public class StoreConfig {
-    /**
-     * 角色： LEADER/FOLLOWER
-     */
-    @JsonProperty
-    private String role;
 
     /**
      * bucket列表
@@ -41,12 +34,6 @@ public class StoreConfig {
     private String indexPath;
 
     /**
-     * bucket集群配置
-     */
-    @JsonProperty
-    private String bucketCluster;
-
-    /**
      * TCP server配置
      */
     @JsonProperty
@@ -57,12 +44,6 @@ public class StoreConfig {
      */
     @JsonProperty
     private NettyClientConfig clientConfig;
-
-    /**
-     * raft协议使用的数据目录
-     */
-    @JsonProperty
-    private String raftDataPath;
 
     /**
      * 集群配置
