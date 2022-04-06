@@ -4,11 +4,9 @@ import com.github.futurefs.netty.ClusterProtos;
 import com.github.futurefs.netty.NettyProtos;
 import com.github.futurefs.netty.enums.ResponseCode;
 import com.github.futurefs.netty.netty.NetworkCommand;
-import com.github.futurefs.store.block.BlockFile;
 import com.github.futurefs.store.block.FileBlock;
 import com.github.futurefs.store.distributed.masterslave.longpoll.LongPollCallback;
 import com.google.protobuf.ByteString;
-import io.netty.channel.ChannelHandlerContext;
 
 /**
  * 主从复制长轮询客户端

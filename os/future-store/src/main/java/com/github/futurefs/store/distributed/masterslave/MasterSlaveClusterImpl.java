@@ -71,7 +71,7 @@ public class MasterSlaveClusterImpl implements ClusterManager {
 
     private final LongPolling<LongPollData, LongPollArgs> longPolling;
 
-    private volatile boolean isReplicateStart = true;
+    private volatile boolean isReplicateStart = false;
 
     public MasterSlaveClusterImpl(final ClusterConfig clusterConfig, final Broker broker, final BlockFile blockFile) {
         this.clusterConfig = clusterConfig;
@@ -89,6 +89,10 @@ public class MasterSlaveClusterImpl implements ClusterManager {
             throw new IllegalArgumentException("invalid cluster configuration: " + clusterConfig.getRole());
         }
         masterSlaveRole = confRole;
+        if (masterSlaveRole.equals(MasterSlaveRole.SLAVE)) {
+            isReplicateStart = true;
+            log.info("start as slave role, set replicate start true.");
+        }
 
         parsePeer();
 

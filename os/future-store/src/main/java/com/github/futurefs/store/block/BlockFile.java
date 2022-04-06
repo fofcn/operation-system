@@ -36,13 +36,15 @@ public class BlockFile extends BaseFile {
     public BlockFile(File file, final Broker broker) {
         super(file);
         this.superBlock = new SuperBlock(StoreConstant.STORE_SUPER_MAGIC_NUMBER,
-                StoreConstant.STORE_SUPER_MAGIC_NUMBER, 0L, 0L);
+                StoreConstant.STORE_VERSION, 0L, 0L);
         this.broker = broker;
         this.producer = new BlockFileProducer(broker);
     }
 
     @Override
     protected void doInitNewFile() throws IOException {
+        log.info("do init new block file");
+        superBlock.getWritePos().set(SUPER_BLOCK_LENGTH);
         // 文件新建，先预分配超级块
         padFile(SUPER_BLOCK_LENGTH);
         // 写入超级块魔数
@@ -51,6 +53,7 @@ public class BlockFile extends BaseFile {
         writeLong(superBlock.getVersion());
         // 写入文件数量
         writeLong(superBlock.getAmount().get());
+        writeLong(superBlock.getWritePos().get());
         // 重定位写入位置
         resetWritePos(SUPER_BLOCK_LENGTH);
 
@@ -65,11 +68,13 @@ public class BlockFile extends BaseFile {
 
     @Override
     protected void doAfterInit() {
+        log.info("init new block file end.");
         broker.registerProducer(StoreConstant.BLOCK_TOPIC_NAME, producer);
     }
 
     @Override
     protected void doRecover() throws IOException {
+        log.info("do recover block file");
         // 读取超级块
         long magic = readLong(0);
         if (magic != superBlock.getMagic()) {
@@ -89,6 +94,8 @@ public class BlockFile extends BaseFile {
         long writePos = readLong();
         superBlock.getWritePos().set(writePos);
         resetWritePos(writePos);
+
+        log.info("recover block file end.");
     }
 
     @Override
