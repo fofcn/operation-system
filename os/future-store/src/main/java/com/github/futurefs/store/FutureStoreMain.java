@@ -30,7 +30,7 @@ public class FutureStoreMain {
             return;
         }
 
-        InputStream in = null;
+        InputStream in;
         try {
             in = new FileInputStream(confFile);
         } catch (FileNotFoundException e) {
