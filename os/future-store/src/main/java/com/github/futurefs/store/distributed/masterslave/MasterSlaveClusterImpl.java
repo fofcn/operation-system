@@ -73,7 +73,7 @@ public class MasterSlaveClusterImpl implements ClusterManager {
 
     private volatile boolean isReplicateStart = true;
 
-    public MasterSlaveClusterImpl(final ClusterConfig clusterConfig, final NettyClientConfig nettyClientConfig, final Broker broker, final BlockFile blockFile) {
+    public MasterSlaveClusterImpl(final ClusterConfig clusterConfig, final Broker broker, final BlockFile blockFile) {
         this.clusterConfig = clusterConfig;
         this.broker = broker;
         this.blockFile = blockFile;
@@ -93,6 +93,7 @@ public class MasterSlaveClusterImpl implements ClusterManager {
         parsePeer();
 
         // 超时时间需要是长轮询的三倍 + C 秒
+        NettyClientConfig nettyClientConfig = clusterConfig.getRpcConfig().toNettyClientConfig();
         nettyClientConfig.setConnectTimeoutMillis(190 * 1000);
         this.rpcClient = new RpcClient(nettyClientConfig, 1, new ArrayList<>(peerTable.values()));
 

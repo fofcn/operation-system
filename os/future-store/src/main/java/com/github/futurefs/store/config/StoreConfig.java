@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.github.futurefs.netty.config.NettyClientConfig;
 import com.github.futurefs.netty.config.NettyServerConfig;
+import com.github.futurefs.store.distributed.ClusterConfig;
 import lombok.Data;
 
 
@@ -67,6 +68,6 @@ public class StoreConfig {
      * 集群配置
      */
     @JsonProperty
-    private StoreClusterConfig clusterConfig;
+    private ClusterConfig clusterConfig;
 
 }
