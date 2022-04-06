@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+option java_package = "com.github.futurefs.grpc";
+option java_outer_classname = "GRpcProtos";
+option java_generate_equals_and_hash = true;
+package proto.grpc;
+
+/**
+ * 客户端协议服务
+ */
+service TrickyFsClientProtoService {
+
+}
+
+/**
+ * 服务端协议服务
+ */
+service TrickyFsServerProtoService {
+
+}
+
+/**
+ * 集群协议服务
+ */
+service TrickyFsClusterProtoService {
+
+}
+
+/**
+ * 管理端协议服务
+ */
+service TrickyFsAdminProtoService {
+
+}
+
+/**
+ * bucket客户端协议服务
+ */
+service TrickyFsBucketClientProtoService {
+
+}
+
+/**
+ * bucket服务端协议服务
+ */
+service TrickyFsBucketServerProtoService {
+
+}
+
