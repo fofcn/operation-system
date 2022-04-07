@@ -129,6 +129,13 @@
             <artifactId>metrics-core</artifactId>
             <version>4.0.2</version>
         </dependency>
+
+        <!-- uid-generator -->
+        <dependency>
+            <groupId>com.xfvape.uid</groupId>
+            <artifactId>uid-generator</artifactId>
+            <version>0.0.4-RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>

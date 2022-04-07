@@ -30,18 +30,7 @@ public class AsyncFlushStrategy implements FlushStrategy {
     public AsyncFlushStrategy(FileChannel fileChannel, int writeCntThreshold) {
         this.fileChannel = fileChannel;
         this.writeCntThreshold = writeCntThreshold;
-        flushThread.execute(() -> {
-            for (; ;) {
-                try {
-                    single.wait();
-                    fileChannel.force(false);
-                } catch (InterruptedException e) {
-                    log.error("", e);
-                } catch (IOException e) {
-                    log.error("flush error", e);
-                }
-            }
-        });
+        start();
     }
 
     @Override
@@ -50,5 +39,20 @@ public class AsyncFlushStrategy implements FlushStrategy {
             single.countDown();
             counter.set(0);
         }
+    }
+
+    private void start() {
+        this.flushThread.execute(() -> {
+            for (; ;) {
+                try {
+                    single.await();
+                    fileChannel.force(false);
+                } catch (InterruptedException e) {
+                    log.error("", e);
+                } catch (IOException e) {
+                    log.error("flush error", e);
+                }
+            }
+        });
     }
 }
