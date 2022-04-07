@@ -2,8 +2,6 @@ package com.github.futurefs.store.common.flush;
 
 import lombok.Data;
 
-import java.nio.channels.FileChannel;
-
 /**
  * 刷盘配置
  *
@@ -16,15 +14,15 @@ public class FlushStrategyConfig {
     /**
      * 刷盘策略枚举
      */
-    private FlushStrategyEnum strategyEnum;
-
-    /**
-     * 文件channel
-     */
-    private FileChannel channel;
+    private FlushStrategyEnum strategy;
 
     /**
      * 写入文件数阈值
      */
     private int flushThreshold;
+
+    /**
+     * 写入文件字节数
+     */
+    private int bytes;
 }

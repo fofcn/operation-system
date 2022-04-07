@@ -3,6 +3,7 @@ package com.github.futurefs.store.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.futurefs.netty.config.NettyClientConfig;
 import com.github.futurefs.netty.config.NettyServerConfig;
+import com.github.futurefs.store.common.flush.FlushStrategyConfig;
 import lombok.Data;
 
 
@@ -32,6 +33,12 @@ public class StoreConfig {
      */
     @JsonProperty
     private String indexPath;
+
+    /**
+     * 输盘配置
+     */
+    @JsonProperty
+    private FlushStrategyConfig flushConfig;
 
     /**
      * TCP server配置

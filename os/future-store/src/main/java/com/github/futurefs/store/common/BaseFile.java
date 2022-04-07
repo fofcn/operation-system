@@ -38,7 +38,7 @@ public class BaseFile {
     /**
      * 文件管道
      */
-    private volatile FileChannel fileChannel;
+    private FileChannel fileChannel;
 
     /**
      * 当前写入位置,初始化为4096
@@ -306,6 +306,10 @@ public class BaseFile {
 
     protected void flush() throws IOException {
         fileChannel.force(false);
+    }
+
+    protected FileChannel getFileChannel() {
+        return fileChannel;
     }
 
     public long getWritePos() {

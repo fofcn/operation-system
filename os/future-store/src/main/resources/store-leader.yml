@@ -5,6 +5,13 @@ trickyfs:
   indexPath: trickyfs/index
   # bucket服务
   buckets: trickyfs-a
+
+  # 刷盘配置
+  flushConfig:
+    strategy: ASYNC
+    flushThreshold: 100
+    bytes: 10485760
+
   # TCP服务端配置
   serverConfig:
     host: 127.0.0.1

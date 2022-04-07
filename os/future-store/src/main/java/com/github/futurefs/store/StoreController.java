@@ -31,7 +31,7 @@ public class StoreController {
 
     public StoreController(StoreConfig storeConfig) {
         this.broker = new DefaultBroker();
-        this.blockFile = new BlockFile(new File(storeConfig.getBlockPath() + File.separator + "block"), broker);
+        this.blockFile = new BlockFile(new File(storeConfig.getBlockPath() + File.separator + "block"), broker, storeConfig.getFlushConfig());
         this.indexTable = new IndexTable(new File(storeConfig.getIndexPath() + File.separator + "index"), broker);
         this.storeServer = new StoreNetworkServer(blockFile, storeConfig.getServerConfig());
         this.clusterManager = new DefaultClusterFactory().getCluster(storeConfig.getClusterConfig(), broker, blockFile);

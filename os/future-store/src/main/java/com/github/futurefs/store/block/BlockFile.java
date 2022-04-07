@@ -6,6 +6,9 @@ import com.github.futurefs.store.block.pubsub.BlockFileProducer;
 import com.github.futurefs.store.common.AppendResult;
 import com.github.futurefs.store.common.BaseFile;
 import com.github.futurefs.store.common.constant.StoreConstant;
+import com.github.futurefs.store.common.flush.DefaultFlushStrategyFactory;
+import com.github.futurefs.store.common.flush.FlushStrategy;
+import com.github.futurefs.store.common.flush.FlushStrategyConfig;
 import com.github.futurefs.store.pubsub.Broker;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,12 +36,17 @@ public class BlockFile extends BaseFile {
 
     private final BlockFileProducer producer;
 
-    public BlockFile(File file, final Broker broker) {
+    private final FlushStrategyConfig flushConfig;
+
+    private FlushStrategy flushStrategy;
+
+    public BlockFile(File file, final Broker broker, final FlushStrategyConfig flushConfig) {
         super(file);
         this.superBlock = new SuperBlock(StoreConstant.STORE_SUPER_MAGIC_NUMBER,
                 StoreConstant.STORE_VERSION, 0L, 0L);
         this.broker = broker;
         this.producer = new BlockFileProducer(broker);
+        this.flushConfig = flushConfig;
     }
 
     @Override
@@ -70,6 +78,7 @@ public class BlockFile extends BaseFile {
     protected void doAfterInit() {
         log.info("init new block file end.");
         broker.registerProducer(StoreConstant.BLOCK_TOPIC_NAME, producer);
+        this.flushStrategy = new DefaultFlushStrategyFactory().createStrategy(flushConfig, getFileChannel());
     }
 
     @Override
@@ -106,11 +115,7 @@ public class BlockFile extends BaseFile {
         ByteBuffer byteBuffer = mappedBuffer.slice();
         byteBuffer.position(0);
         byteBuffer.put(superBlock.encode());
-        try {
-            flush();
-        } catch (IOException e) {
-            log.error("flush error");
-        }
+        flushStrategy.flush();
     }
 
     public AppendResult append(FileBlock fileBlock) {
